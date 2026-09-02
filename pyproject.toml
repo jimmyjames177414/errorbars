@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "errorbars"
+version = "0.1.0"
+description = "The statistics your eval harness doesn't do: paired effects, bootstrap CIs, multiplicity correction, and up-front power analysis for LLM experiments."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "errorbars contributors" }]
+keywords = [
+    "llm",
+    "evaluation",
+    "statistics",
+    "bootstrap",
+    "power-analysis",
+    "confidence-interval",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+
+# Runtime dependencies are deliberately minimal so `uvx errorbars` starts fast.
+# scipy is FORBIDDEN here: Holm, permutation and Wilson are implemented in this
+# package (see src/errorbars/stats/) and normal quantiles come from the stdlib
+# `statistics.NormalDist`.
+dependencies = ["numpy>=1.24", "PyYAML>=6.0"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.11",
+    "ruff>=0.6",
+    "jsonschema>=4.21",
+    "types-PyYAML>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/jimmyjames177414/errorbars"
+Source = "https://github.com/jimmyjames177414/errorbars"
+Issues = "https://github.com/jimmyjames177414/errorbars/issues"
+
+[project.scripts]
+errorbars = "errorbars.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/errorbars"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/", "tests/", "schemas/", "docs/", "examples/", "README.md", "LICENSE", "CHANGELOG.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "live: requires a real network endpoint or API key; deselected by default",
+    "slow: Monte-Carlo simulation tests (seconds, not milliseconds)",
+]
+filterwarnings = ["error"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Models emit typographic apostrophes ("isn’t"), so the negation patterns have to
+# match them. Allow the character rather than sprinkling noqa over every regex.
+allowed-confusables = ["’"]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # bugbear
+    "C4",  # comprehensions
+    "SIM", # simplify
+    "RUF",
+]
+ignore = [
+    "N803", # allow statistical argument names like `N`
+    "N806", # allow statistical local names like `MSB`
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+disallow_any_unimported = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = "yaml"
+ignore_missing_imports = false
