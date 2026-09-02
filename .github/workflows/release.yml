@@ -1,0 +1,70 @@
+name: Release
+
+# Manual only. Publishing is a decision, not a side effect of merging.
+#
+# Uses PyPI Trusted Publishing (OIDC), so there is no API token stored in this repository
+# and nothing to leak. Configure the publisher at
+# https://pypi.org/manage/project/errorbars/settings/publishing/ before the first run.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to publish"
+        required: true
+        default: testpypi
+        type: choice
+        options: [testpypi, pypi]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install
+        run: uv pip install --system -e ".[dev]"
+
+      # Publishing something that does not pass its own tests would be worse than not
+      # publishing at all, so the gate is here rather than assumed from CI.
+      - name: Verify before building
+        run: |
+          ruff check .
+          ruff format --check .
+          mypy --strict src/
+          pytest -m "not live" -q
+
+      - name: Build
+        run: uv build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write # required for Trusted Publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        if: inputs.target == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Publish to PyPI
+        if: inputs.target == 'pypi'
+        uses: pypa/gh-action-pypi-publish@release/v1

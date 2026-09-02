@@ -1,0 +1,47 @@
+name: Bug report
+description: Something crashed, or behaved in a way that is clearly wrong
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a number that disagrees with a statistical source, use the
+        **Statistical bug** template instead — it asks for the right things.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: A command, and the smallest spec or results directory that shows it.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Output or traceback
+      render: text
+
+  - type: input
+    id: version
+    attributes:
+      label: Version and Python
+      placeholder: "errorbars 0.1.0, Python 3.12, macOS"
+    validations:
+      required: true

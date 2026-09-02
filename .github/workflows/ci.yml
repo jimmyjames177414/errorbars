@@ -1,0 +1,76 @@
+name: CI
+
+# No secrets are configured for this workflow, and none are needed. The entire suite runs
+# offline against a deterministic simulator; tests that would need a real endpoint are
+# marked `live` and deselected. If CI ever needs a key, that is a bug in the repository.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: py${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          # One macOS and one Windows job, to catch path assumptions the Linux matrix
+          # cannot: cache directory resolution, and the append-only trials file.
+          - os: macos-latest
+            python-version: "3.12"
+          - os: windows-latest
+            python-version: "3.12"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Create the environment
+        run: uv venv
+
+      - name: Install
+        run: uv pip install -e ".[dev]"
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Format
+        run: uv run ruff format --check .
+
+      - name: Types
+        run: uv run mypy --strict src/
+
+      - name: Tests
+        run: uv run pytest -m "not live" -q
+
+      - name: The flagship command must work with nothing configured
+        run: uv run errorbars power --items 200 --repeats 5 --baseline 0.80
+
+      - name: The demo must run end to end, offline
+        run: uv run errorbars run examples/negation-sensitivity.yaml --analyze
+
+      - name: scipy must not be installed
+        shell: bash
+        run: |
+          if uv pip list | grep -iq '^scipy '; then
+            echo "scipy is present; it is forbidden at runtime (see pyproject.toml)"
+            exit 1
+          fi
+          echo "no scipy"

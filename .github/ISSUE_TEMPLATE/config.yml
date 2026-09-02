@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Statistical question (not a bug)
+    url: https://github.com/jimmyjames177414/errorbars/discussions
+    about: "How to size a run, what an interval means, whether a design is adequate. Ask in Discussions - docs/statistics.md may already answer it."
+  - name: Security vulnerability
+    url: https://github.com/jimmyjames177414/errorbars/security/advisories/new
+    about: Report privately. Please do not open a public issue.

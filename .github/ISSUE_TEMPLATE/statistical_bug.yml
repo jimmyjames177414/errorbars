@@ -1,0 +1,52 @@
+name: Statistical bug
+description: A number this tool produced disagrees with a source you trust
+title: "[stats] "
+labels: ["bug", "statistics"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the most valuable kind of bug report this project can get, and it is
+        treated as a priority. The whole value of the library is that the arithmetic is
+        right, so a disagreement with R, a textbook, or a published table matters more
+        than almost anything else in the tracker.
+
+  - type: textarea
+    id: command
+    attributes:
+      label: The exact command or code
+      description: Something that reproduces it. Include seeds.
+      render: shell
+      placeholder: errorbars power --items 200 --repeats 5 --baseline 0.80 --icc 0.5
+    validations:
+      required: true
+
+  - type: textarea
+    id: got
+    attributes:
+      label: What errorbars produced
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and where that comes from
+      description: |
+        A source makes this actionable. For example:
+
+        - `R: p.adjust(c(0.01, 0.04), method = "holm")` returns ...
+        - Newcombe (1998) Table 1 gives ... for 81/263
+        - statsmodels `power.NormalIndPower().solve_power(...)` gives ...
+        - Worked by hand as follows ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "errorbars --version"
+    validations:
+      required: true

@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest something this should do
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Worth knowing before you write: this is deliberately a small library, roughly
+        "the statistics your eval harness doesn't do". It is not trying to become an eval
+        harness, and the README's *Not built yet* list is a set of decisions rather than
+        a backlog. Proposals that keep it small are the easiest to accept.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to find out that you currently cannot?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like it to do
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you have tried, or what already does this
+      description: |
+        If promptfoo or Inspect AI already covers it, say so — that is useful, not
+        disqualifying.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: I have read the "What this is not" section of the README
+          required: true
