@@ -322,7 +322,7 @@ Apache-2.0. See [LICENSE](LICENSE).
 <div align="center">
 <img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/avatar.png" width="80" alt="jimmyjames177414">
 
-**[@jimmyjames177414](https://github.com/jimmyjames177414)**
+**[@jimmyjames177414](https://github.com/jimmyjames177414)** · Apache-2.0
 
 <sub>One of nine open-source tools for measuring what context and tools
 actually do to AI systems:<br>
