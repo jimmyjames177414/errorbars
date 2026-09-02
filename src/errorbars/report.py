@@ -112,6 +112,15 @@ def render_analysis_table(run: IngestedRun, analysis: AnalysisResult) -> str:
         + (f"  ({control.control_rate:.1%} correct)" if control else ""),
         f"  design        {run.n_items} items x {run.repeats:g} repeats,"
         f" alpha={analysis.alpha:g}, power={analysis.power:.0%}",
+    ]
+    if run.skipped_unresolved:
+        # Above the table on purpose. If a large share of a run never resolved, that has
+        # to be known before any effect size below is read, not discovered in a footnote.
+        lines.append(
+            f"  UNRESOLVED    {run.skipped_inconclusive} inconclusive + "
+            f"{run.skipped_error} error trial(s) skipped, excluded from every rate"
+        )
+    lines += [
         "",
         _table(headers, rows, "lrrrrrl"),
         "",
@@ -263,6 +272,8 @@ def write_report_json(path: Path, run: IngestedRun, analysis: AnalysisResult) ->
         "control_intervention_id": analysis.control_id,
         "n_items": run.n_items,
         "repeats": run.repeats,
+        "skipped_inconclusive": run.skipped_inconclusive,
+        "skipped_error": run.skipped_error,
         "statistics": {
             "alpha": analysis.alpha,
             "power": analysis.power,
@@ -310,6 +321,15 @@ def write_report_md(path: Path, run: IngestedRun, analysis: AnalysisResult) -> P
         f"- control arm: `{analysis.control_id}`, {control_rate:.1%} correct",
         f"- design: {run.n_items} items x {run.repeats:g} repeats, "
         f"alpha = {analysis.alpha:g}, target power = {analysis.power:.0%}",
+        *(
+            [
+                f"- **unresolved: {run.skipped_inconclusive} inconclusive + "
+                f"{run.skipped_error} error trial(s) skipped**, excluded from every rate "
+                "and denominator"
+            ]
+            if run.skipped_unresolved
+            else []
+        ),
         f"- intervals: percentile bootstrap over items, "
         f"{analysis.bootstrap_resamples:,} resamples, paired, "
         + (

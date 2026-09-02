@@ -6,7 +6,11 @@
   "type": "object",
   "required": ["cxs_version", "experiment_id", "tool", "created_at", "determinism"],
   "properties": {
-    "cxs_version": { "type": "string", "const": "0.1" },
+    "cxs_version": {
+      "type": "string",
+      "enum": ["0.1", "0.1.1"],
+      "description": "0.1.1 only adds the optional Outcome.verdict field, so a 0.1 directory stays valid."
+    },
     "experiment_id": { "type": "string", "minLength": 1 },
     "tool": {
       "type": "object",

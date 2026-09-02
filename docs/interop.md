@@ -68,12 +68,36 @@ over your dataset.
 **`outcomes.jsonl`** — one line per score, joined to trials by `trial_id`:
 
 ```json
-{"trial_id": "t-0001", "scorer": "exact_match:v1", "passed": true}
+{"trial_id": "t-0001", "scorer": "exact_match:v1", "passed": true, "verdict": "true"}
 ```
 
-`score` (a float) or `passed` (a boolean) — either is fine. Partial-credit scorers should
-write `score`; pass/fail harnesses can write only `passed` and errorbars will read it as
-1.0 / 0.0.
+`score` (a float), `passed` (a boolean), or `verdict` (CXS 0.1.1) — any of the three is
+enough. Partial-credit scorers should write `score`; pass/fail harnesses can write only
+`passed` and errorbars will read it as 1.0 / 0.0.
+
+### If your scorer has a third outcome, say so
+
+`passed` is a boolean and cannot represent "we do not know". CXS 0.1.1 added `verdict`,
+an enum of `"true"` / `"false"` / `"inconclusive"` / `"error"`, for exactly that case: a
+truncated trace, a provider failure part-way, a judge that declined to answer.
+
+```json
+{"trial_id": "t-0002", "scorer": "ltl3:v1", "verdict": "inconclusive"}
+```
+
+Two rules, and errorbars enforces both:
+
+* **Where `passed` and `verdict` are both present they must agree.** A record saying
+  `passed: false, verdict: "true"` is malformed and is rejected rather than guessed at.
+* **Omit `passed` and `score` entirely for `inconclusive` and `error`.** There is no
+  honest value for either — `inconclusive` is not a failure. A reader that understands
+  only `passed` then skips the record instead of silently counting it as one, which is
+  the intended failure mode.
+
+errorbars **skips unresolved trials, counts them, and reports the count** above the
+results table. It never scores them, never coerces them to zero, and never lets them into
+a denominator. A pass rate computed over trials nobody resolved is a confident-looking
+wrong number, and producing one quietly would defeat the purpose of the tool.
 
 Then:
 

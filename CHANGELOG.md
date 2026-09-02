@@ -6,6 +6,28 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `--simultaneous-ci`: Bonferroni-adjusted simultaneous intervals at `alpha/m`, so the
+  interval column controls the same family-wise error rate as the Holm p-values beside
+  it. Default off. The columns are now labelled `95% CI (per-comparison)` and
+  `p (Holm, family-wise)` either way, because presenting two different error rates in one
+  row without saying so is the kind of quiet inconsistency this package exists to object
+  to.
+- **CXS 0.1.1 `verdict` support.** `passed` is a boolean and cannot represent "we do not
+  know". Outcomes carrying `verdict: "inconclusive"` or `"error"` are now **skipped,
+  counted and reported** rather than raising or being coerced to a failure — they are
+  excluded from every rate, interval and denominator. `verdict: "true"` / `"false"` score
+  as `passed` does, and a record where `passed` and `verdict` disagree, or where an
+  unresolved verdict carries `passed`/`score` anyway, is rejected as malformed.
+  errorbars also now *emits* `verdict` on every outcome it writes.
+
+### Changed
+
+- `cxs_version` written by `errorbars run` is now `0.1.1`; the reader accepts `0.1` and
+  `0.1.1` without complaint. The change is purely additive, so existing 0.1 directories
+  read exactly as before.
+
 ## [0.1.0] - 2026-09-02
 
 First release. A small statistics layer for LLM experiments.

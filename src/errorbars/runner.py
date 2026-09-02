@@ -35,7 +35,7 @@ from .spec import DatasetItem, ExperimentSpec
 
 __all__ = ["CXS_VERSION", "RunOutcome", "new_experiment_id", "run_experiment"]
 
-CXS_VERSION = "0.1"
+CXS_VERSION = "0.1.1"
 
 _CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 
@@ -329,6 +329,11 @@ def run_experiment(
                             "scorer": f"{spec.scorer}:v1",
                             "score": score.score,
                             "passed": score.passed,
+                            # CXS 0.1.1. Every scorer here is binary, so the verdict can
+                            # only ever be true/false and always agrees with `passed`.
+                            # Emitted anyway so the field is exercised by a real producer
+                            # rather than only by a fixture.
+                            "verdict": "true" if score.passed else "false",
                             "detail": score.detail,
                         }
                     )

@@ -1,6 +1,6 @@
-# CXS v0.1 schemas (vendored)
+# CXS v0.1.1 schemas (vendored)
 
-These are a **vendored copy** of the Context Experiment Interchange Spec, v0.1. They are
+These are a **vendored copy** of the Context Experiment Interchange Spec, v0.1.1. They are
 not a package. Nothing here is imported from another project, and no other project
 imports it.
 
@@ -45,6 +45,22 @@ own demo.
 errorbars' copy of that test is `tests/test_cxs_conformance.py`. It runs the shipped
 demo end to end and validates every line of the output. Conformance is a claim about
 files; no project should claim it without that test.
+
+## CXS 0.1.1: the `verdict` field
+
+0.1.1 added an optional `verdict` enum to `Outcome` — `"true"` / `"false"` /
+`"inconclusive"` / `"error"` — because `passed` is a boolean and cannot carry a third
+state. It is purely additive: a 0.1 directory emitting `passed` alone is still valid, and
+`cxs_version` may read `"0.1"` or `"0.1.1"`.
+
+The schema enforces what the prose requires. `passed` and `verdict` must agree where both
+appear, and an `inconclusive` or `error` verdict may carry neither `passed` nor `score` —
+there is no honest value for either, and omitting them is what lets a 0.1-only reader skip
+the record instead of misreading it as a failure.
+
+errorbars emits `verdict` on every outcome (its scorers are binary, so it is always
+`true` or `false`) and, on the reading side, skips unresolved trials, counts them, and
+reports the tally rather than folding them into any rate.
 
 ## Two deliberate additions
 

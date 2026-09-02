@@ -1,13 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/jimmyjames177414/errorbars/schemas/cxs-outcome.schema.json",
-  "title": "CXS Outcome v0.1",
+  "title": "CXS Outcome v0.1.1",
   "description": "The scored result of a trial. Kept separate from the Trial so a run can be re-scored without re-calling the model, which is what makes cached results reusable across scorers.",
   "type": "object",
   "required": ["trial_id", "scorer"],
   "anyOf": [
     { "required": ["score"] },
-    { "required": ["passed"] }
+    { "required": ["passed"] },
+    { "required": ["verdict"] }
   ],
   "properties": {
     "trial_id": { "type": "string", "minLength": 1 },
@@ -17,7 +18,43 @@
     },
     "score": { "type": "number" },
     "passed": { "type": "boolean" },
+    "verdict": {
+      "type": "string",
+      "enum": ["true", "false", "inconclusive", "error"],
+      "description": "Added in CXS 0.1.1, because `passed` is a boolean and cannot carry a third state. Optional and additive: binary scorers may keep emitting `passed` alone. Where both appear they must agree. A producer that can generate 'inconclusive' or 'error' MUST emit `verdict` and MUST omit `passed` for those two values, so a reader that only understands `passed` skips the record instead of misreading it as a failure."
+    },
     "detail": { "type": "object", "additionalProperties": true }
   },
+  "allOf": [
+    {
+      "$comment": "passed and verdict must agree where both are present.",
+      "if": {
+        "required": ["passed", "verdict"],
+        "properties": { "passed": { "const": true } }
+      },
+      "then": { "properties": { "verdict": { "const": "true" } } }
+    },
+    {
+      "if": {
+        "required": ["passed", "verdict"],
+        "properties": { "passed": { "const": false } }
+      },
+      "then": { "properties": { "verdict": { "const": "false" } } }
+    },
+    {
+      "$comment": "An unresolved verdict has no honest binary or numeric reading, so neither field may accompany it.",
+      "if": {
+        "required": ["verdict"],
+        "properties": {
+          "verdict": { "enum": ["inconclusive", "error"] }
+        }
+      },
+      "then": {
+        "not": {
+          "anyOf": [{ "required": ["passed"] }, { "required": ["score"] }]
+        }
+      }
+    }
+  ],
   "additionalProperties": true
 }

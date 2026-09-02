@@ -103,7 +103,7 @@ def test_the_expected_files_are_written(demo_results: Path) -> None:
 def test_manifest_validates_against_the_vendored_schema(demo_results: Path) -> None:
     manifest = json.loads((demo_results / "manifest.json").read_text(encoding="utf-8"))
     _validator("cxs-manifest.schema.json").validate(manifest)
-    assert manifest["cxs_version"] == "0.1"
+    assert manifest["cxs_version"] == "0.1.1"
     assert manifest["tool"]["name"] == "errorbars"
 
 
@@ -123,6 +123,24 @@ def test_every_outcome_validates(demo_results: Path) -> None:
     for number, line in enumerate(lines, 1):
         errors = sorted(validator.iter_errors(json.loads(line)), key=str)
         assert not errors, f"outcomes.jsonl:{number} failed validation: {errors[0].message}"
+
+
+def test_our_own_outcomes_carry_a_verdict_that_agrees_with_passed(demo_results: Path) -> None:
+    """errorbars claims CXS 0.1.1, so it emits `verdict`, not only `passed`.
+
+    Every scorer here is binary, so the verdict can only be true/false -- but emitting it
+    means the field is exercised by a real producer on every run rather than only by a
+    hand-written fixture.
+    """
+    lines = (demo_results / "outcomes.jsonl").read_text(encoding="utf-8").splitlines()
+    assert lines
+    for number, line in enumerate(lines, 1):
+        record = json.loads(line)
+        assert "verdict" in record, f"outcomes.jsonl:{number} has no verdict"
+        assert record["verdict"] in ("true", "false")
+        assert record["verdict"] == ("true" if record["passed"] else "false"), (
+            f"outcomes.jsonl:{number}: verdict disagrees with passed"
+        )
 
 
 def test_every_intervention_validates(demo_results: Path) -> None:

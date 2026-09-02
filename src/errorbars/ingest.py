@@ -1,4 +1,4 @@
-"""Read any CXS v0.1 results directory into arrays ready for analysis.
+"""Read any CXS results directory into arrays ready for analysis.
 
 This is where the interop claim lives, so it is worth being precise about what the claim
 *is*. errorbars reads **files**. It does not import any sibling project, and no sibling
@@ -13,13 +13,23 @@ proof of the claim, and ``tests/test_ingest.py`` is what checks it.
 Tolerances, chosen so a well-formed foreign directory is not rejected on a technicality:
 
 * unknown top-level and per-record fields are ignored, never fatal;
-* an outcome may carry ``score`` (float), ``passed`` (bool), or both;
+* an outcome may carry ``score`` (float), ``passed`` (bool), ``verdict`` (CXS 0.1.1), or
+  any combination that does not contradict itself;
 * ``repeat_index`` may be absent, in which case order of appearance is used;
 * ``interventions.json`` may be absent, in which case arms are derived from the trials.
 
+Unresolved trials
+-----------------
+CXS 0.1.1 added ``verdict``, whose ``inconclusive`` and ``error`` values have no honest
+binary reading. Those trials are **skipped, counted and reported** -- never scored, never
+coerced to zero, and never folded into a denominator. A pass rate computed over trials
+nobody resolved is a confident-looking wrong number, which is the failure mode this whole
+package exists to argue against, so it is not one errorbars is willing to produce
+quietly.
+
 Things that are still errors, because guessing would be worse than failing: no manifest,
-no trials, no outcomes joinable to trials, an ambiguous control arm, or more than one
-model with no choice made.
+no trials, no outcomes joinable to trials, an ambiguous control arm, more than one model
+with no choice made, or an outcome record that contradicts itself.
 """
 
 from __future__ import annotations
@@ -28,14 +38,25 @@ import json
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 from .errors import IngestError
 from .stats.effects import Arm
 
-__all__ = ["IngestedRun", "load_run", "read_jsonl"]
+__all__ = [
+    "SUPPORTED_CXS_VERSIONS",
+    "UNRESOLVED_VERDICTS",
+    "VERDICTS",
+    "IngestedRun",
+    "OutcomeScore",
+    "load_run",
+    "read_jsonl",
+]
 
 CONTROL_NAME_HINTS = ("control", "baseline", "noop", "none", "unmodified", "identity")
+
+# 0.1.1 only adds the optional `verdict` field, so a 0.1 directory still reads cleanly.
+SUPPORTED_CXS_VERSIONS = ("0.1", "0.1.1")
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -58,15 +79,78 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return records
 
 
-def _score_of(outcome: dict[str, Any], where: str) -> float:
+VERDICTS = ("true", "false", "inconclusive", "error")
+UNRESOLVED_VERDICTS = ("inconclusive", "error")
+
+
+class OutcomeScore(NamedTuple):
+    """What one outcome record resolved to."""
+
+    score: float | None
+    """``None`` when the trial is unresolved and must be kept out of every denominator."""
+    verdict: str | None
+    """The CXS verdict, when the producer emitted one."""
+
+
+def _resolve_outcome(outcome: dict[str, Any], where: str) -> OutcomeScore:
+    """Turn an outcome record into a score, or into a decision to skip it.
+
+    CXS 0.1.1 added an optional ``verdict`` enum -- ``true`` / ``false`` /
+    ``inconclusive`` / ``error`` -- because ``passed`` is a boolean and cannot carry a
+    third state. A run with unresolved trials is a real thing (a truncated trace, a
+    provider error mid-way), and the one behaviour that must never happen is folding
+    those into a pass rate: a denominator that quietly includes trials nobody resolved
+    produces exactly the kind of confident-looking wrong number this package exists to
+    argue against.
+
+    So ``inconclusive`` and ``error`` are skipped and counted, never coerced to 0.
+
+    Raises:
+        IngestError: on a verdict outside the enum, or on a record that contradicts
+            itself -- ``passed`` disagreeing with ``verdict``, or a binary ``passed`` /
+            numeric ``score`` sitting alongside an unresolved verdict. The spec requires
+            producers to omit ``passed`` for the unresolved values precisely so a reader
+            cannot misread them, and a record that does otherwise is malformed rather
+            than merely unusual.
+    """
+    verdict = outcome.get("verdict")
+    if verdict is not None:
+        if not isinstance(verdict, str) or verdict not in VERDICTS:
+            raise IngestError(
+                f"{where}: 'verdict' must be one of {', '.join(VERDICTS)}; got {verdict!r}"
+            )
+
+        if verdict in UNRESOLVED_VERDICTS:
+            for field_name in ("passed", "score"):
+                if outcome.get(field_name) is not None:
+                    raise IngestError(
+                        f"{where}: verdict is {verdict!r} but the record also carries "
+                        f"{field_name!r}={outcome[field_name]!r}. CXS requires producers "
+                        f"to omit it for an unresolved verdict, because there is no "
+                        f"honest value for it -- {verdict!r} is not a failure."
+                    )
+            return OutcomeScore(score=None, verdict=verdict)
+
+        passed = outcome.get("passed")
+        if passed is not None and bool(passed) != (verdict == "true"):
+            raise IngestError(
+                f"{where}: 'passed'={passed!r} contradicts 'verdict'={verdict!r}. When "
+                "both are present they must agree."
+            )
+
     if outcome.get("score") is not None:
         try:
-            return float(outcome["score"])
+            return OutcomeScore(score=float(outcome["score"]), verdict=verdict)
         except (TypeError, ValueError) as exc:
             raise IngestError(f"{where}: 'score' is not a number: {outcome['score']!r}") from exc
     if outcome.get("passed") is not None:
-        return 1.0 if bool(outcome["passed"]) else 0.0
-    raise IngestError(f"{where}: outcome has neither a 'score' nor a 'passed' field")
+        return OutcomeScore(score=1.0 if bool(outcome["passed"]) else 0.0, verdict=verdict)
+    if verdict is not None:
+        return OutcomeScore(score=1.0 if verdict == "true" else 0.0, verdict=verdict)
+
+    raise IngestError(
+        f"{where}: outcome has none of 'score', 'passed' or 'verdict', so there is nothing to score"
+    )
 
 
 def _model_key(trial: dict[str, Any]) -> str:
@@ -93,6 +177,14 @@ class IngestedRun:
     n_items: int
     scorer: str
     notes: list[str] = field(default_factory=list)
+    skipped_inconclusive: int = 0
+    """Trials whose verdict was ``inconclusive``. Excluded from every rate."""
+    skipped_error: int = 0
+    """Trials whose verdict was ``error``. Excluded from every rate."""
+
+    @property
+    def skipped_unresolved(self) -> int:
+        return self.skipped_inconclusive + self.skipped_error
 
     @property
     def control(self) -> Arm:
@@ -189,10 +281,10 @@ def load_run(
 
     notes: list[str] = []
     cxs_version = str(manifest.get("cxs_version", ""))
-    if cxs_version != "0.1":
+    if cxs_version not in SUPPORTED_CXS_VERSIONS:
         notes.append(
-            f"manifest declares cxs_version {cxs_version!r}; this build reads 0.1 and is "
-            "proceeding on a best-effort basis"
+            f"manifest declares cxs_version {cxs_version!r}; this build reads "
+            f"{' and '.join(SUPPORTED_CXS_VERSIONS)} and is proceeding on a best-effort basis"
         )
 
     tool = manifest.get("tool") or {}
@@ -218,13 +310,17 @@ def load_run(
         interventions = [entry for entry in manifest_interventions if isinstance(entry, dict)]
 
     scores_by_trial: dict[str, float] = {}
+    unresolved_by_trial: dict[str, str] = {}
     for index, outcome in enumerate(outcomes, 1):
         trial_id = outcome.get("trial_id")
         if trial_id is None:
             raise IngestError(f"{directory / 'outcomes.jsonl'}:{index} has no 'trial_id'")
-        scores_by_trial[str(trial_id)] = _score_of(
-            outcome, f"{directory / 'outcomes.jsonl'}:{index}"
-        )
+        resolved = _resolve_outcome(outcome, f"{directory / 'outcomes.jsonl'}:{index}")
+        if resolved.score is None:
+            # Deliberately not recorded as a score of any kind. See _resolve_outcome.
+            unresolved_by_trial[str(trial_id)] = resolved.verdict or "inconclusive"
+        else:
+            scores_by_trial[str(trial_id)] = resolved.score
 
     available_models = sorted({_model_key(trial) for trial in trials})
     if model is None:
@@ -246,6 +342,7 @@ def load_run(
     grouped: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     unscored = 0
     errored = 0
+    skipped = {"inconclusive": 0, "error": 0}
     for trial in trials:
         if _model_key(trial) != model_key:
             continue
@@ -253,6 +350,9 @@ def load_run(
             errored += 1
             continue
         trial_id = trial.get("trial_id")
+        if trial_id is not None and str(trial_id) in unresolved_by_trial:
+            skipped[unresolved_by_trial[str(trial_id)]] += 1
+            continue
         if trial_id is None or str(trial_id) not in scores_by_trial:
             unscored += 1
             continue
@@ -274,6 +374,15 @@ def load_run(
         notes.append(f"{unscored} trial(s) had no matching outcome and were dropped")
     if errored:
         notes.append(f"{errored} trial(s) recorded a provider error and were dropped")
+    unresolved_total = skipped["inconclusive"] + skipped["error"]
+    if unresolved_total:
+        scored_total = sum(len(scores) for items in grouped.values() for scores in items.values())
+        share = unresolved_total / (unresolved_total + scored_total)
+        notes.append(
+            f"{skipped['inconclusive']} inconclusive and {skipped['error']} error "
+            f"trial(s) were skipped, not scored ({share:.1%} of this model's trials). "
+            "They are excluded from every rate and denominator."
+        )
 
     arm_ids = sorted(grouped)
     control_id, how = _resolve_control(control, manifest, interventions, arm_ids)
@@ -312,4 +421,6 @@ def load_run(
         n_items=len(grouped[control_id]),
         scorer=scorer,
         notes=notes,
+        skipped_inconclusive=skipped["inconclusive"],
+        skipped_error=skipped["error"],
     )

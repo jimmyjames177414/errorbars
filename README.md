@@ -72,7 +72,7 @@ Then, on results — yours or another tool's:
 $ errorbars run examples/negation-sensitivity.yaml --analyze
 
 results/negation-sensitivity
-  tool          errorbars 0.1.0 (CXS 0.1)
+  tool          errorbars 0.1.0 (CXS 0.1.1)
   model         mock:comparison-sim-v1
   scorer        first_word:v1
   control       control  (86.2% correct)
@@ -151,9 +151,14 @@ misrepresent your design.
 
 ## Reading results other tools produced
 
-`errorbars analyze` reads the [CXS v0.1](schemas/README.md) interchange format. The claim
-is about **files, not imports** — nothing here imports another package, and no other
+`errorbars analyze` reads the [CXS v0.1.1](schemas/README.md) interchange format. The
+claim is about **files, not imports** — nothing here imports another package, and no other
 package imports this one.
+
+It also handles the case a boolean cannot: an outcome marked `inconclusive` or `error` is
+**skipped, counted and reported above the table**, never scored and never folded into a
+denominator. A pass rate computed over trials nobody resolved is a confident-looking wrong
+number, which is the thing this tool exists to catch.
 
 `tests/fixtures/foreign_tool_results/` is a results directory deliberately written in a
 different tool's style: another `tool.name`, arm names this project would never generate,
@@ -228,6 +233,11 @@ Every one of these is real, and none of them is going to be fixed by a flag.
 - **The design-effect correction is an approximation**, not a mixed-effects model. Two
   scalars standing in for a full random-effects structure.
 - **Frequentist only.** No priors, no posteriors, no Bayes factors.
+- **A three-valued scorer is read, not modelled.** Outcomes marked `inconclusive` or
+  `error` (CXS 0.1.1) are skipped, counted and reported rather than scored — they never
+  enter a denominator. But errorbars models no *uncertainty* about why they were
+  unresolved, so a run that is 40% inconclusive gets intervals computed over the 60% that
+  resolved, which may not be a representative 60%.
 - **A noisy scorer adds variance that is not modelled.** LLM-judge scores carry their own
   disagreement, and treating a judge as ground truth understates uncertainty by an amount
   this package does not estimate. That is why no LLM-judge scorer ships.

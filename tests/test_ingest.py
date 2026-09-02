@@ -180,7 +180,7 @@ def test_outcomes_without_a_score_or_passed_field_are_rejected(foreign_copy: Pat
     record.pop("passed")
     lines[0] = json.dumps(record)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    with pytest.raises(IngestError, match="neither a 'score' nor a 'passed'"):
+    with pytest.raises(IngestError, match="nothing to score"):
         load_run(foreign_copy)
 
 
