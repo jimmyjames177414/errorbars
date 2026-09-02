@@ -9,7 +9,7 @@ description = "The statistics your eval harness doesn't do: paired effects, boot
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-authors = [{ name = "errorbars contributors" }]
+authors = [{ name = "jimmyjames177414" }]
 keywords = [
     "llm",
     "evaluation",
