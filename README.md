@@ -1,6 +1,17 @@
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/banner.jpg" alt="jimmyjames177414" width="100%">
+
 # errorbars
 
 **Your eval says prompt B beat prompt A by 4 points. This tells you whether that's real.**
+
+[![CI](https://github.com/jimmyjames177414/errorbars/actions/workflows/ci.yml/badge.svg)](https://github.com/jimmyjames177414/errorbars/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/errorbars.svg)](https://pypi.org/project/errorbars/)
+[![Python](https://img.shields.io/pypi/pyversions/errorbars.svg)](https://pypi.org/project/errorbars/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/jimmyjames177414/errorbars/blob/main/LICENSE)
+
+</div>
 
 A small statistics layer for LLM experiments: paired control-vs-treatment effects,
 bootstrap confidence intervals, multiplicity correction, and — the part nothing else does —
@@ -21,6 +32,8 @@ That last distinction is the point of this tool. In every other harness both com
 ## Show me it working
 
 No install, no config, no API key, no network:
+
+<img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/demo.png" alt="errorbars power analysis output" width="100%">
 
 ```console
 $ uvx errorbars power --items 200 --repeats 5 --baseline 0.80
@@ -278,3 +291,18 @@ deterministic simulator. See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Licence
 
 Apache-2.0. See [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/avatar.png" width="80" alt="James Miller">
+
+**James Miller** · [@jimmyjames177414](https://github.com/jimmyjames177414)
+
+<sub>One of five projects measuring what context actually does to AI systems:<br>
+<a href="https://github.com/jimmyjames177414/stopless">stopless</a> ·
+<a href="https://github.com/jimmyjames177414/stopbench">stopbench</a> ·
+<a href="https://github.com/jimmyjames177414/mincontext">mincontext</a> ·
+<a href="https://github.com/jimmyjames177414/validwhile">validwhile</a> ·
+<a href="https://github.com/jimmyjames177414/errorbars">errorbars</a></sub>
+</div>
