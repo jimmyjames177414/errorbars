@@ -65,6 +65,38 @@ Name it with ``--sesoi`` -- "I care about 2 percentage points" -- and a bigger r
 genuinely does convert underpowered into null, because the interval shrinks while the
 margin stays put. Equivalence cannot be established without an equivalence margin, and
 the default is a convenience, not a substitute for picking one.
+
+The `min()` rule itself is a **pragmatic composite**, chosen because it fails in the
+safe direction in every case, not because any particular paper prescribes it. Nothing in
+the literature endorses that exact choice. Where you can name your own margin, do.
+
+Per-comparison intervals next to a family-wise p-value
+-------------------------------------------------------
+By default the interval beside each effect is a **per-comparison** 95% interval, while
+the Holm-adjusted p-value beside it controls error across the **whole family** of
+interventions. Those are two different error rates in one row, and pretending otherwise
+would be the exact kind of quiet inconsistency this package exists to complain about. So
+the columns are labelled with which is which, always.
+
+Per-comparison intervals are the near-universal default -- it is what every eval harness,
+every statistics package and almost every paper prints -- and they are the right thing
+when each interval is read on its own: "how big is this one effect?"
+
+They are the wrong thing when the interval is read as a *screening* device across many
+arms, because then the chance that at least one interval misses its true value grows with
+the number of arms, just as the chance of at least one false positive does. Pass
+``simultaneous_ci=True`` (``--simultaneous-ci``) for that case. Each interval is then
+built at ``alpha / m`` by taking the ``alpha/2m`` and ``1 - alpha/2m`` percentiles of the
+bootstrap distribution, so all m intervals hold together at ``1 - alpha``. They are
+strictly wider, and both MDEs move to the same level, so the whole row is internally
+consistent at one error rate.
+
+Bonferroni is used rather than a Holm-style step-down because there is no accepted
+step-down analogue for interval estimation: Holm's power advantage comes from
+sequentially rejecting, which produces decisions, not intervals. The consequence is that
+the simultaneous intervals are slightly conservative relative to the Holm p-values beside
+them -- an interval may straddle zero while its adjusted p clears alpha. That is the
+honest cost of the wider guarantee, and it is stated here rather than discovered.
 """
 
 from __future__ import annotations
@@ -205,6 +237,21 @@ class AnalysisResult:
     permutations: int
     effects: list[EffectEstimate]
     notes: list[str] = field(default_factory=list)
+    simultaneous_ci: bool = False
+    """True when the intervals are family-wise rather than per-comparison."""
+    ci_alpha: float = 0.05
+    """The level each interval was actually built at: ``alpha``, or ``alpha / m``
+    when ``simultaneous_ci`` is set. Reported so output can say which it is instead of
+    leaving a reader to assume."""
+    family_size: int = 1
+    """Number of treatment arms, i.e. the m in both the Holm and Bonferroni
+    adjustments."""
+
+    @property
+    def ci_label(self) -> str:
+        """How the interval column should be headed, given what it actually contains."""
+        scope = "simultaneous" if self.simultaneous_ci else "per-comparison"
+        return f"{round((1 - self.alpha) * 100)}% CI ({scope})"
 
 
 def default_sesoi(mde_design: float, mde_observed: float) -> float:
@@ -269,6 +316,7 @@ def analyse_arms(
     sesoi: float | None = None,
     icc_override: float | None = None,
     pair_corr_override: float | None = None,
+    simultaneous_ci: bool = False,
 ) -> AnalysisResult:
     """Estimate every treatment's paired effect against the control arm.
 
@@ -276,7 +324,8 @@ def analyse_arms(
         control: the control (noop) arm. Required -- an effect size without a control is
             not reportable, which is why there is no way to call this without one.
         treatments: the intervention arms to compare against it.
-        alpha: family-wise significance level.
+        alpha: significance level. Holm always applies it family-wise; whether the
+            *intervals* are family-wise depends on ``simultaneous_ci``.
         power: target power used when computing each arm's MDE.
         bootstrap_resamples: resamples for the percentile CI.
         permutations: sign-flip draws for the paired permutation test.
@@ -284,6 +333,10 @@ def analyse_arms(
         sesoi: smallest effect of interest, as a proportion. Defaults per-arm to that
             arm's MDE.
         icc_override / pair_corr_override: use these instead of the measured values.
+        simultaneous_ci: build Bonferroni-adjusted simultaneous intervals at
+            ``alpha / m`` rather than per-comparison intervals at ``alpha``, where ``m``
+            is the number of treatment arms. See the module docstring for why the
+            default is off and when to turn it on.
 
     Returns:
         AnalysisResult with one EffectEstimate per treatment and any caveats in
@@ -291,6 +344,18 @@ def analyse_arms(
     """
     notes: list[str] = []
     partials: list[_Partial] = []
+
+    # Family size for both the Holm adjustment and, when asked for, the interval
+    # adjustment. With one comparison there is no multiplicity and alpha/m == alpha, so
+    # `simultaneous_ci` correctly becomes a no-op rather than a special case.
+    family_size = max(1, len(treatments))
+    ci_alpha = alpha / family_size if simultaneous_ci else alpha
+    if simultaneous_ci and family_size > 1:
+        notes.append(
+            f"intervals are simultaneous: each is built at alpha/{family_size} = "
+            f"{ci_alpha:.4g} (Bonferroni), so all {family_size} of them hold together "
+            f"with {1 - alpha:.0%} confidence"
+        )
 
     for treatment in treatments:
         items = _aligned_items(control, treatment)
@@ -348,7 +413,7 @@ def analyse_arms(
         ci = paired_bootstrap_ci(
             control_means,
             treatment_means,
-            alpha=alpha,
+            alpha=ci_alpha,
             resamples=bootstrap_resamples,
             seed=seed,
         )
@@ -365,7 +430,7 @@ def analyse_arms(
             mde_design = minimum_detectable_effect(
                 control_rate,
                 len(items),
-                alpha=alpha,
+                alpha=ci_alpha,
                 power=power,
                 repeats=design_repeats,
                 icc=icc,
@@ -381,9 +446,12 @@ def analyse_arms(
         # What this run's own precision would have caught. See the module docstring for
         # why this, and not the design model, is what the verdict is measured against.
         mde_observed = (
-            (z_critical(alpha) + z_quantile(power)) * ci.se if math.isfinite(ci.se) else math.nan
+            (z_critical(ci_alpha) + z_quantile(power)) * ci.se if math.isfinite(ci.se) else math.nan
         )
 
+        # Arm rates stay at the per-comparison level deliberately. They are
+        # descriptive summaries of one arm, not members of the family of comparisons
+        # that the multiplicity correction exists to protect.
         control_ci, ci_method = arm_rate_interval(
             control_groups, alpha=alpha, resamples=bootstrap_resamples, seed=seed
         )
@@ -465,4 +533,7 @@ def analyse_arms(
         permutations=permutations,
         effects=effects,
         notes=notes,
+        simultaneous_ci=simultaneous_ci,
+        ci_alpha=ci_alpha,
+        family_size=family_size,
     )

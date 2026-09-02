@@ -180,11 +180,11 @@ These are opposite conclusions from an identical p-value, and telling them apart
 main thing this tool does:
 
 ```
-intervention       effect          95% CI  p (raw)  p (Holm)    n  verdict
-----------------  -------  --------------  -------  --------  ---  ------------
-strip-negation    -23.7pp  [-29.3, -18.3]   <0.001    <0.001  200  significant
-strip-politeness   -0.1pp    [-1.6, +1.4]    1.000     1.000  200  null
-strip-articles     -2.3pp    [-4.6, -0.1]    0.050     0.099  200  UNDERPOWERED
+intervention       effect  95% CI (per-comparison)  p (raw)  p (Holm, family-wise)    n  verdict
+----------------  -------  -----------------------  -------  ---------------------  ---  ------------
+strip-negation    -23.7pp           [-29.3, -18.3]   <0.001                 <0.001  200  significant
+strip-politeness   -0.1pp             [-1.6, +1.4]    1.000                  1.000  200  null
+strip-articles     -2.3pp             [-4.6, -0.1]    0.050                  0.099  200  UNDERPOWERED
 ```
 
 Look at the intervals rather than the p-values.
@@ -257,6 +257,61 @@ were tested pushes it clearly over.
 
 If you have ever tried several prompt variants and reported the best one, you have done
 this, and the correction is the honest way to report it.
+
+### The mismatch this creates, and what to do about it
+
+Look carefully at that table and there is an inconsistency sitting in plain sight.
+
+The **p-value** column is family-wise: Holm controls the chance of *any* false positive
+across all three interventions. The **interval** column is per-comparison: each interval
+is a 95% interval *on its own*.
+
+Those are two different error rates, printed side by side in the same row. It is not a
+rounding detail. With three arms, each interval independently has a 5% chance of missing
+its true value, so the chance that **at least one of them misses is about 14%**, not 5%.
+Read the intervals as a set and the "95%" on the header is not the number you are getting.
+
+`errorbars` labels the columns so you can see which is which:
+
+```
+intervention       effect  95% CI (per-comparison)  p (raw)  p (Holm, family-wise)    n  verdict
+```
+
+**Why per-comparison is still the default.** It is what every eval harness, every
+statistics package and almost every paper prints, and it is the right answer to the
+question people usually ask, which is "how big is *this* effect?" Silently widening
+everyone's intervals to answer a question they did not ask would be its own kind of
+dishonesty, and it would make the tool disagree with every other tool for no stated
+reason.
+
+**When to reach for `--simultaneous-ci`.** When you are scanning the interval column
+across arms to decide what to chase — screening rather than reading one result. Then you
+want a guarantee that covers the whole set:
+
+```console
+$ errorbars analyze results/negation-sensitivity --simultaneous-ci
+
+intervention       effect  95% CI (simultaneous)  p (raw)  p (Holm, family-wise)    n  verdict
+----------------  -------  ---------------------  -------  ---------------------  ---  ------------
+strip-negation    -23.7pp         [-30.5, -17.1]   <0.001                 <0.001  200  significant
+strip-politeness   -0.1pp           [-2.0, +1.8]    1.000                  1.000  200  null
+strip-articles     -2.3pp           [-5.1, +0.3]    0.051                  0.103  200  UNDERPOWERED
+```
+
+Each interval is now built at `α/m` — the `α/2m` and `1 − α/2m` percentiles of the
+bootstrap distribution instead of `α/2` and `1 − α/2` — so all three hold together at 95%.
+They are strictly wider, which is the price of the stronger guarantee. Both MDEs move to
+the same level too, so the whole row now runs on one error rate.
+
+Notice `strip-articles` crossing zero at `[-5.1, +0.3]` once the correction is applied.
+That is the correction doing its job.
+
+**One honest wrinkle.** The simultaneous intervals use Bonferroni, not Holm, because
+there is no accepted step-down analogue for *intervals* — Holm's extra power comes from
+rejecting sequentially, which produces decisions rather than ranges. So the intervals are
+slightly conservative relative to the Holm p-values beside them, and an interval can
+straddle zero while its adjusted p clears alpha. That is a real limitation of the method,
+not a bug, and it is better stated here than discovered later.
 
 ## 10. Reading a report, in order
 
@@ -348,6 +403,16 @@ uses the run's own minimum detectable effect, and both that and the interval shr
 same rate — so a bigger run does not make "null" easier to earn. The claim that *does*
 improve with N is a null against a margin you chose in advance. Pass `--sesoi 2pp` and mean
 it. Equivalence cannot be established without an equivalence margin.
+
+**And that default margin is a pragmatic composite.** It is the *smaller* of the design
+MDE and the precision actually achieved, chosen because it fails in the safe direction
+whichever way the two disagree. No paper prescribes that particular rule and there is no
+literature behind it — it is a judgement call, documented so you can disagree with it.
+Naming your own `--sesoi` sidesteps it entirely.
+
+**Intervals and p-values carry different error rates by default.** Per-comparison
+intervals next to family-wise Holm p-values, as covered in §9. Use `--simultaneous-ci`
+when you are reading the interval column as a screen across arms.
 
 **Association, not causation, and only on your corpus.** "Deleting negation cost 18 points
 on these 200 items with this model at this temperature" is what was measured. Anything

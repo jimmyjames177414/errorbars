@@ -27,3 +27,7 @@ results/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# uv lockfile: nothing here consumes it (CI installs with `uv pip install -e ".[dev]"`),
+# so committing it would only pin a toolchain that silently rots.
+uv.lock

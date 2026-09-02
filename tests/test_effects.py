@@ -174,6 +174,77 @@ def test_pipeline_produces_all_three_verdicts_on_constructed_data() -> None:
     assert by_id["small-effect"].verdict == "underpowered"
 
 
+# --------------------------------------------------------------------------------------
+# Per-comparison vs simultaneous intervals
+# --------------------------------------------------------------------------------------
+
+
+def test_simultaneous_intervals_are_strictly_wider() -> None:
+    """The whole point of the correction: a family-wise guarantee costs width.
+
+    Same data, same alpha, same seed. Only the percentiles differ -- alpha/2m and
+    1 - alpha/2m instead of alpha/2 and 1 - alpha/2 -- so every interval must grow.
+    """
+    control, treatments = _constructed_arms()
+    kwargs = {"alpha": 0.05, "sesoi": 0.05, "seed": 7, "bootstrap_resamples": 4000}
+
+    per_comparison = analyse_arms(control, treatments, **kwargs)  # type: ignore[arg-type]
+    simultaneous = analyse_arms(control, treatments, simultaneous_ci=True, **kwargs)  # type: ignore[arg-type]
+
+    assert len(simultaneous.effects) == 3
+    for narrow, wide in zip(per_comparison.effects, simultaneous.effects, strict=True):
+        assert wide.intervention_id == narrow.intervention_id
+        assert wide.ci_low < narrow.ci_low, wide.intervention_id
+        assert wide.ci_high > narrow.ci_high, wide.intervention_id
+        # The point estimate is a property of the data and must not move.
+        assert wide.effect == pytest.approx(narrow.effect)
+
+
+def test_simultaneous_ci_uses_alpha_over_the_family_size() -> None:
+    control, treatments = _constructed_arms()
+    result = analyse_arms(control, treatments, alpha=0.05, simultaneous_ci=True, seed=1)
+    assert result.family_size == 3
+    assert result.ci_alpha == pytest.approx(0.05 / 3)
+    assert result.simultaneous_ci is True
+    assert any("Bonferroni" in note for note in result.notes)
+
+
+def test_simultaneous_ci_is_a_no_op_with_a_single_comparison() -> None:
+    """With one arm there is no multiplicity, so alpha/1 == alpha and nothing changes."""
+    control, treatments = _constructed_arms()
+    only = treatments[:1]
+
+    per_comparison = analyse_arms(control, only, sesoi=0.05, seed=3)
+    simultaneous = analyse_arms(control, only, sesoi=0.05, seed=3, simultaneous_ci=True)
+
+    assert simultaneous.ci_alpha == pytest.approx(per_comparison.ci_alpha)
+    assert simultaneous.effects[0].ci_low == pytest.approx(per_comparison.effects[0].ci_low)
+    assert simultaneous.effects[0].ci_high == pytest.approx(per_comparison.effects[0].ci_high)
+
+
+def test_simultaneous_ci_moves_both_mdes_to_the_same_level() -> None:
+    """Otherwise a family-wise interval would be judged against a per-comparison
+    threshold, which is the very inconsistency the flag exists to remove."""
+    control, treatments = _constructed_arms()
+    narrow = analyse_arms(control, treatments, seed=5).effects[0]
+    wide = analyse_arms(control, treatments, seed=5, simultaneous_ci=True).effects[0]
+
+    assert wide.mde_design > narrow.mde_design
+    assert wide.mde_observed > narrow.mde_observed
+
+
+def test_the_interval_label_states_which_error_rate_it_carries() -> None:
+    control, treatments = _constructed_arms()
+    assert analyse_arms(control, treatments, seed=0).ci_label == "95% CI (per-comparison)"
+    assert (
+        analyse_arms(control, treatments, seed=0, simultaneous_ci=True).ci_label
+        == "95% CI (simultaneous)"
+    )
+    assert analyse_arms(control, treatments, alpha=0.01, seed=0).ci_label == (
+        "99% CI (per-comparison)"
+    )
+
+
 def test_the_null_and_underpowered_arms_have_indistinguishable_p_values() -> None:
     """Why the verdict column exists at all.
 
@@ -380,6 +451,11 @@ def test_rendered_table_distinguishes_null_from_underpowered() -> None:
 
     assert "null" in rendered
     assert "UNDERPOWERED" in rendered
+    # The two columns carry different error rates, and the header must say so rather
+    # than leaving a reader to assume they match.
+    assert "95% CI (per-comparison)" in rendered
+    assert "p (Holm, family-wise)" in rendered
+    assert "--simultaneous-ci" in rendered
     assert "did nothing, and this run was big enough to have seen it" in rendered
     assert "taught you nothing" in rendered
     # Every effect carries its interval; a bare percentage is never printed alone.

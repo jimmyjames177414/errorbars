@@ -79,13 +79,12 @@ def _table(headers: list[str], rows: list[list[str]], aligns: str) -> str:
 
 def render_analysis_table(run: IngestedRun, analysis: AnalysisResult) -> str:
     """The main ``errorbars analyze`` output."""
-    confidence = round((1 - analysis.alpha) * 100)
     headers = [
         "intervention",
         "effect",
-        f"{confidence}% CI",
+        analysis.ci_label,
         "p (raw)",
-        "p (Holm)",
+        "p (Holm, family-wise)",
         "n",
         "verdict",
     ]
@@ -124,11 +123,29 @@ def render_analysis_table(run: IngestedRun, analysis: AnalysisResult) -> str:
         )
         design = "n/a" if math.isnan(effect.mde_design) else f"{_pp_plain(effect.mde_design)}pp"
         lines.append(
-            f"  {effect.intervention_id}: MDE {design} by design "
-            f"({observed} at the precision actually achieved), ICC {effect.icc:.2f}, "
-            f"pairing r {effect.pair_corr:.2f}"
+            f"  {effect.intervention_id}: MDE {design} by design, {observed} achieved. "
+            f"ICC {effect.icc:.2f}, pairing r {effect.pair_corr:.2f}"
         )
         lines.append(f"      {effect.reason}")
+
+    if analysis.family_size > 1:
+        lines.append("")
+        if analysis.simultaneous_ci:
+            lines += [
+                f"  Intervals are simultaneous across {analysis.family_size} arms "
+                f"(Bonferroni, each at",
+                f"  alpha/{analysis.family_size} = {analysis.ci_alpha:.4g}), so they and "
+                "the Holm p-values control the same",
+                "  family-wise error rate.",
+            ]
+        else:
+            lines += [
+                "  The p-values are family-wise (Holm); the intervals are per-comparison. Each",
+                "  interval holds on its own, so the chance at least one of them misses grows with",
+                "  the number of arms. That is the usual default and is fine when you read one",
+                "  interval at a time. Use --simultaneous-ci to put both columns on the "
+                "same footing.",
+            ]
 
     underpowered = [e for e in analysis.effects if e.verdict == "underpowered"]
     nulls = [e for e in analysis.effects if e.verdict == "null"]
@@ -250,10 +267,13 @@ def write_report_json(path: Path, run: IngestedRun, analysis: AnalysisResult) ->
             "alpha": analysis.alpha,
             "power": analysis.power,
             "ci_method": "percentile bootstrap over items, paired",
+            "ci_scope": "simultaneous" if analysis.simultaneous_ci else "per-comparison",
+            "ci_alpha": analysis.ci_alpha,
             "bootstrap_resamples": analysis.bootstrap_resamples,
             "test": "paired permutation (sign-flip)",
             "permutations": analysis.permutations,
             "multiplicity": "holm",
+            "family_size": analysis.family_size,
         },
         "effects": [_effect_dict(effect) for effect in analysis.effects],
         "notes": run.notes + analysis.notes,
@@ -265,8 +285,8 @@ def write_report_json(path: Path, run: IngestedRun, analysis: AnalysisResult) ->
 def write_report_md(path: Path, run: IngestedRun, analysis: AnalysisResult) -> Path:
     """Write ``report.md``: the same content, pasteable into a PR or an issue."""
     header = (
-        f"| intervention | effect | {int((1 - analysis.alpha) * 100)}% CI | p (raw) | "
-        "p (Holm) | n items | MDE | verdict |"
+        f"| intervention | effect | {analysis.ci_label} | p (raw) | "
+        "p (Holm, family-wise) | n items | MDE | verdict |"
     )
     separator = "|---|---:|---:|---:|---:|---:|---:|---|"
     rows = []
@@ -291,13 +311,35 @@ def write_report_md(path: Path, run: IngestedRun, analysis: AnalysisResult) -> P
         f"- design: {run.n_items} items x {run.repeats:g} repeats, "
         f"alpha = {analysis.alpha:g}, target power = {analysis.power:.0%}",
         f"- intervals: percentile bootstrap over items, "
-        f"{analysis.bootstrap_resamples:,} resamples, paired",
+        f"{analysis.bootstrap_resamples:,} resamples, paired, "
+        + (
+            f"**simultaneous** across {analysis.family_size} arm(s) at "
+            f"alpha/{analysis.family_size} = {analysis.ci_alpha:.4g} (Bonferroni)"
+            if analysis.simultaneous_ci
+            else f"**per-comparison** at alpha = {analysis.alpha:g}"
+        ),
         f"- test: paired permutation, {analysis.permutations:,} sign-flips, Holm-adjusted across "
         f"{len(analysis.effects)} intervention(s)",
         "",
         header,
         separator,
         *rows,
+        "",
+        "## Two different error rates in one table",
+        "",
+        (
+            "The p-value column is **family-wise**: Holm controls the chance of *any* false "
+            "positive across all interventions tested. The interval column is "
+            + (
+                "**simultaneous**, so it is on the same footing -- all of the intervals hold "
+                "together at the stated confidence."
+                if analysis.simultaneous_ci
+                else "**per-comparison**, so it is not on the same footing -- each interval "
+                "holds on its own, and the chance that at least one of them misses grows "
+                "with the number of arms. Re-run with `--simultaneous-ci` if you are "
+                "reading the intervals as a screen across arms rather than one at a time."
+            )
+        ),
         "",
         "## How to read the verdict",
         "",

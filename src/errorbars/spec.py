@@ -83,6 +83,7 @@ class AnalysisSpec:
     permutations: int = 10_000
     multiplicity: str = "holm"
     sesoi: float | None = None
+    simultaneous_ci: bool = False
 
 
 @dataclass(frozen=True)
@@ -252,6 +253,7 @@ def load_spec(path: str | Path) -> tuple[ExperimentSpec, list[str]]:
         permutations=int(analysis_raw.get("permutations", 10_000)),
         multiplicity=multiplicity,
         sesoi=None if sesoi_raw is None else float(sesoi_raw),
+        simultaneous_ci=bool(analysis_raw.get("simultaneous_ci", False)),
     )
     if not 0.0 < analysis.alpha < 1.0:
         raise SpecError(f"analysis.alpha must be in (0, 1), got {analysis.alpha}")

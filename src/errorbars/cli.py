@@ -141,6 +141,15 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     analyze.add_argument(
+        "--simultaneous-ci",
+        action="store_true",
+        help=(
+            "build Bonferroni-adjusted simultaneous intervals at alpha/m instead of "
+            "per-comparison intervals, so all m of them hold together and the interval "
+            "column controls the same family-wise error rate as the Holm p-values"
+        ),
+    )
+    analyze.add_argument(
         "--json", action="store_true", help="write report.json into the results dir"
     )
     analyze.add_argument("--md", action="store_true", help="write report.md into the results dir")
@@ -219,6 +228,7 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
         permutations=args.permutations,
         seed=args.seed,
         sesoi=args.sesoi,
+        simultaneous_ci=args.simultaneous_ci,
     )
     print(render_analysis_table(run, analysis))
 
@@ -280,6 +290,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             permutations=spec.analysis.permutations,
             seed=spec.trials.seed if spec.trials.seed is not None else 0,
             sesoi=spec.analysis.sesoi,
+            simultaneous_ci=spec.analysis.simultaneous_ci,
             json=True,
             md=True,
         )

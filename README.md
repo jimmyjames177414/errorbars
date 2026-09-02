@@ -78,18 +78,23 @@ results/negation-sensitivity
   control       control  (86.2% correct)
   design        200 items x 5 repeats, alpha=0.05, power=80%
 
-intervention       effect          95% CI  p (raw)  p (Holm)    n  verdict
-----------------  -------  --------------  -------  --------  ---  ------------
-strip-negation    -23.7pp  [-29.3, -18.3]   <0.001    <0.001  200  significant
-strip-politeness   -0.1pp    [-1.6, +1.4]    1.000     1.000  200  null
-strip-articles     -2.3pp    [-4.6, -0.1]    0.050     0.099  200  UNDERPOWERED
+intervention       effect  95% CI (per-comparison)  p (raw)  p (Holm, family-wise)    n  verdict
+----------------  -------  -----------------------  -------  ---------------------  ---  ------------
+strip-negation    -23.7pp           [-29.3, -18.3]   <0.001                 <0.001  200  significant
+strip-politeness   -0.1pp             [-1.6, +1.4]    1.000                  1.000  200  null
+strip-articles     -2.3pp             [-4.6, -0.1]    0.050                  0.099  200  UNDERPOWERED
 
-  strip-negation: MDE 7.3pp by design (7.8pp at the precision actually achieved), ICC 0.46, pairing r 0.22
+  strip-negation: MDE 7.3pp by design, 7.8pp achieved. ICC 0.46, pairing r 0.22
       adjusted p = 0.0003 <= alpha = 0.05
-  strip-politeness: MDE 4.5pp by design (2.2pp at the precision actually achieved), ICC 0.16, pairing r 0.84
+  strip-politeness: MDE 4.5pp by design, 2.2pp achieved. ICC 0.16, pairing r 0.84
       CI [-1.6, +1.4] pp excludes effects of +/-2.2 pp
-  strip-articles: MDE 4.8pp by design (3.2pp at the precision actually achieved), ICC 0.18, pairing r 0.72
+  strip-articles: MDE 4.8pp by design, 3.2pp achieved. ICC 0.18, pairing r 0.72
       CI [-4.6, -0.1] pp still admits an effect of +/-3.2 pp
+
+  The p-values are family-wise (Holm); the intervals are per-comparison. Each
+  interval holds on its own, so the chance at least one of them misses grows with
+  the number of arms. That is the usual default and is fine when you read one
+  interval at a time. Use --simultaneous-ci to put both columns on the same footing.
 
   null      = not significant AND the interval excludes an effect as large as the MDE.
               strip-politeness did nothing, and this run was big enough to have seen it.
