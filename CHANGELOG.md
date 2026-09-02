@@ -21,6 +21,10 @@ All notable changes to this project are documented here. The format follows
   as `passed` does, and a record where `passed` and `verdict` disagree, or where an
   unresolved verdict carries `passed`/`score` anyway, is rejected as malformed.
   errorbars also now *emits* `verdict` on every outcome it writes.
+- `examples/unresolved_trials.py`, which measures what squashing unresolved trials
+  into failures costs: on the shipped fixture with a tenth of trials unresolved the
+  headline rate moves 7.3 percentage points while the effect moves only 1.7, because
+  the bias lands on every arm at once. Worked through in `docs/statistics.md` sec 10.
 
 ### Changed
 

@@ -200,7 +200,7 @@ Same p-value neighbourhood. Opposite meanings. A tool that printed only `p > 0.0
 both would be actively misleading, and most of them do.
 
 (That table is real output from `errorbars run examples/negation-sensitivity.yaml
---analyze`, against a *simulated* model that ships with this repository. See §12.)
+--analyze`, against a *simulated* model that ships with this repository. See §13.)
 
 ## 8. Confidence intervals, and why a bare number is not enough
 
@@ -313,7 +313,73 @@ slightly conservative relative to the Holm p-values beside them, and an interval
 straddle zero while its adjusted p clears alpha. That is a real limitation of the method,
 not a bug, and it is better stated here than discovered later.
 
-## 10. Reading a report, in order
+## 10. The denominator nobody checks
+
+Everything above assumed every trial produced an answer. Some do not. A trace gets
+truncated, a provider drops the connection part-way, a judge declines, a parser fails on
+a response nobody anticipated.
+
+`passed` is a boolean, so there is nowhere honest to put that. The tempting move is
+`passed: false` — one character of code, and the run keeps going. Here is what that
+character costs, on the fixture shipped with this repository, with a tenth of the trials
+unresolved:
+
+```console
+$ python examples/unresolved_trials.py
+
+One tenth of the trials never resolved.  (72 of them, skipped honestly)
+
+            control rate    effect            95% CI        verdict
+-------------------------------------------------------------------
+honest            76.9%    -25.0pp    [-33.8, -16.0]    significant
+folded            69.6%    -23.3pp    [-31.2, -15.4]    significant
+
+  control rate moved by 7.3 percentage points
+  effect size moved by  -1.7 percentage points
+
+  Folding unresolved trials into the denominator as failures does not add
+  noise -- it adds bias, in a known direction, to every arm at once.
+```
+
+**7.3 percentage points on the headline number**, from a change nobody would write in a
+commit message. Not noise — bias, in a known direction, applied to every arm at once.
+
+Two things are worth reading carefully in that table.
+
+**The rate is badly wrong; the effect much less so.** The control arm loses 7.3 points and
+so does every other arm, so the *difference* between them only moves 1.7. That partial
+cancellation is exactly what makes this bug survive code review: a team reporting deltas
+sees a number that looks nearly right, while every absolute rate they quote — in a
+release note, a dashboard, a slide — is off by more than most of the effects they are
+chasing. And the cancellation is only partial. It is complete only if the unresolved
+trials fall evenly across arms, which is precisely what you cannot assume when an
+intervention is the thing making responses harder to parse.
+
+**Both runs still say "significant".** The verdict column does not save you here. This is
+not a failure the statistics catch, because the statistics are being computed correctly
+on data that already had the error baked into it.
+
+So `errorbars` refuses to do it. An outcome carrying CXS 0.1.1's
+`verdict: "inconclusive"` or `"error"` is **skipped, counted, and reported above the
+results table** — never scored, never coerced to zero, never admitted to a denominator:
+
+```
+  UNRESOLVED    72 inconclusive + 0 error trial(s) skipped, excluded from every rate
+```
+
+If your harness has a third outcome, emit `verdict` and omit `passed` for those two
+values. `docs/interop.md` has the four-file shape. If it does not, nothing changes: a
+producer emitting `passed` alone is still perfectly valid.
+
+**What this does not fix, and cannot.** Skipping is right, but the trials that remain are
+not a random sample of the trials you meant to run — the ones that failed to resolve may
+be exactly the hard ones. `errorbars` computes intervals over what resolved and has no
+way to check whether that remainder is representative. Statisticians call this missing
+not at random, and it is unsolvable from inside the tool. Skipping is right; assuming the
+remainder is unbiased is an assumption the tool cannot test, so it is one you have to
+make deliberately.
+
+## 11. Reading a report, in order
 
 1. **N, and repeats.** Small N means everything below is wide. Check it first.
 2. **The interval, not the point estimate.** Ask whether the *whole* range would change
@@ -323,7 +389,7 @@ not a bug, and it is better stated here than discovered later.
 4. **The adjusted p-value**, if more than one thing was tested.
 5. **The verdict**, which is the previous four steps done for you.
 
-## 11. The formulas, for anyone who wants them
+## 12. The formulas, for anyone who wants them
 
 Skippable. Everything above works without this section.
 
@@ -379,7 +445,7 @@ item difficulty, and noise drags a correlation toward zero, so the reported figu
 Using the observed figure directly understates how much pairing helped, which is the safe
 direction, so that is what the tool does by default.
 
-## 12. What this does not fix
+## 13. What this does not fix
 
 Being straight about the limits is the price of asking anyone to trust the rest.
 
@@ -444,7 +510,13 @@ errorbars run examples/negation-sensitivity.yaml --analyze
 # Section 8
 uv run pytest tests/test_bootstrap.py -q -s -m slow
 
-# Section 11
+# Section 9
+errorbars analyze results/negation-sensitivity --simultaneous-ci
+
+# Section 10
+python examples/unresolved_trials.py
+
+# Section 12
 uv run pytest tests/test_power.py tests/test_proportions.py -q
 ```
 

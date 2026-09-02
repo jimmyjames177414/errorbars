@@ -157,8 +157,18 @@ package imports this one.
 
 It also handles the case a boolean cannot: an outcome marked `inconclusive` or `error` is
 **skipped, counted and reported above the table**, never scored and never folded into a
-denominator. A pass rate computed over trials nobody resolved is a confident-looking wrong
-number, which is the thing this tool exists to catch.
+denominator.
+
+That is not a formality. On the shipped fixture with a tenth of the trials unresolved,
+squashing them into `passed: false` moves the headline rate by **7.3 percentage points**
+— 76.9% becomes 69.6% — while the measured *effect* moves only 1.7pp, because the bias
+lands on every arm at once. That partial cancellation is what lets the bug survive review:
+the deltas look nearly right while every absolute rate you quote is wrong by more than
+most of the effects you are chasing. Both readings still print "significant".
+
+    python examples/unresolved_trials.py
+
+Worked through in [docs/statistics.md §10](docs/statistics.md).
 
 `tests/fixtures/foreign_tool_results/` is a results directory deliberately written in a
 different tool's style: another `tool.name`, arm names this project would never generate,

@@ -258,3 +258,31 @@ def test_a_0_1_1_manifest_reads_without_a_best_effort_warning(run_dir: Path) -> 
 
 def test_a_plain_0_1_manifest_still_reads_without_a_warning() -> None:
     assert not any("best-effort" in note for note in load_run(FOREIGN).notes)
+
+
+def test_the_worked_example_still_produces_the_figures_the_docs_quote() -> None:
+    """docs/statistics.md sec 10 pastes this script's output. Keep them in step.
+
+    The two headline numbers -- a 7.3 point shift in the control rate, and only a 1.7
+    point shift in the effect -- are the most quotable thing in the documentation, so a
+    change that silently moves them should fail here rather than in a reader's face.
+    """
+    import runpy
+
+    script = Path(__file__).resolve().parent.parent / "examples" / "unresolved_trials.py"
+    assert script.is_file()
+
+    module = runpy.run_path(str(script))
+    honest = module["read"]
+    build = module["build"]
+
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as workspace:
+        root = Path(workspace)
+        honest_rate, honest_effect, *_ = honest(build(root / "h", fold_into_failures=False))
+        folded_rate, folded_effect, *_ = honest(build(root / "f", fold_into_failures=True))
+
+    assert (honest_rate - folded_rate) * 100 == pytest.approx(7.3, abs=0.1)
+    assert (honest_effect - folded_effect) * 100 == pytest.approx(-1.7, abs=0.2)
+    assert honest_rate > folded_rate, "squashing unresolved trials must depress the rate"
