@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jimmyjames177414/errorbars/schemas/cxs-manifest.schema.json",
+  "title": "CXS RunManifest v0.1",
+  "description": "The reproducibility envelope. Written once per run, at the top of the results directory.",
+  "type": "object",
+  "required": ["cxs_version", "experiment_id", "tool", "created_at", "determinism"],
+  "properties": {
+    "cxs_version": { "type": "string", "const": "0.1" },
+    "experiment_id": { "type": "string", "minLength": 1 },
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "created_at": { "type": "string" },
+    "models": {
+      "type": "array",
+      "items": { "$ref": "cxs-model-descriptor.schema.json" }
+    },
+    "interventions": {
+      "type": "array",
+      "items": { "$ref": "cxs-intervention.schema.json" }
+    },
+    "control_intervention_id": {
+      "type": "string",
+      "description": "Which arm is the control. Not in the base spec text, but written by errorbars and honoured by its reader, because inferring the control is the one thing a reader must never guess at."
+    },
+    "dataset": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "sha256": { "type": "string" },
+        "n_items": { "type": "integer", "minimum": 0 },
+        "source": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "scorer": { "type": "string" },
+    "repeats": { "type": "integer", "minimum": 1 },
+    "seed": { "type": ["integer", "null"] },
+    "determinism": {
+      "type": "string",
+      "enum": ["deterministic", "stochastic"],
+      "description": "A tool MUST NOT claim 'deterministic' without having actually observed identical outputs across repeats."
+    },
+    "cache": {
+      "type": "object",
+      "properties": {
+        "hits": { "type": "integer", "minimum": 0 },
+        "misses": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "totals": {
+      "type": "object",
+      "properties": {
+        "model_calls": { "type": "integer", "minimum": 0 },
+        "prompt_tokens": { "type": "integer", "minimum": 0 },
+        "completion_tokens": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+    "environment": { "type": "object", "additionalProperties": true },
+    "analysis": { "type": "object", "additionalProperties": true },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": true
+}

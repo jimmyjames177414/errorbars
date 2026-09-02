@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jimmyjames177414/errorbars/schemas/cxs-outcome.schema.json",
+  "title": "CXS Outcome v0.1",
+  "description": "The scored result of a trial. Kept separate from the Trial so a run can be re-scored without re-calling the model, which is what makes cached results reusable across scorers.",
+  "type": "object",
+  "required": ["trial_id", "scorer"],
+  "anyOf": [
+    { "required": ["score"] },
+    { "required": ["passed"] }
+  ],
+  "properties": {
+    "trial_id": { "type": "string", "minLength": 1 },
+    "scorer": {
+      "type": "string",
+      "description": "Versioned scorer identity, e.g. 'exact_match:v1'."
+    },
+    "score": { "type": "number" },
+    "passed": { "type": "boolean" },
+    "detail": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jimmyjames177414/errorbars/schemas/cxs-intervention.schema.json",
+  "title": "CXS Intervention v0.1",
+  "description": "A named, reproducible transformation of the context. kind='noop' is the control arm and is mandatory in any experiment that reports an effect.",
+  "type": "object",
+  "required": ["id", "kind"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "kind": {
+      "type": "string",
+      "enum": ["remove", "replace", "reorder", "noop"]
+    },
+    "selector": {
+      "type": "object",
+      "description": "How the intervention picks what it acts on. Empty for noop.",
+      "additionalProperties": true
+    },
+    "description": { "type": "string" },
+    "deterministic": { "type": "boolean" },
+    "implementation": {
+      "type": "string",
+      "description": "Versioned pointer to the code that applied it, e.g. 'errorbars.interventions:remove:v1'."
+    }
+  },
+  "additionalProperties": true
+}

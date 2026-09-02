@@ -1,0 +1,31 @@
+[
+  {
+    "id": "baseline",
+    "kind": "noop",
+    "description": "Unmodified context.",
+    "deterministic": true,
+    "implementation": "contextprobe.arms.baseline:v2"
+  },
+  {
+    "id": "shuffle-context",
+    "kind": "reorder",
+    "selector": {
+      "type": "document_order",
+      "value": "shuffle"
+    },
+    "description": "Randomise the order of retrieved documents.",
+    "deterministic": false,
+    "implementation": "contextprobe.arms.shuffle:v2"
+  },
+  {
+    "id": "drop-tool-schemas",
+    "kind": "remove",
+    "selector": {
+      "type": "unit_kind",
+      "value": "tool_schema"
+    },
+    "description": "Remove unused tool schemas from the request.",
+    "deterministic": true,
+    "implementation": "contextprobe.arms.drop_schemas:v2"
+  }
+]

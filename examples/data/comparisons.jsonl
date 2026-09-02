@@ -1,0 +1,200 @@
+{"expected": "true", "id": "cmp.0000", "prompt": "Kindly, Is 94 greater than 7? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0001", "prompt": "Is 61 not greater than 21? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0002", "prompt": "Consider the numbers 6 and 19. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0003", "prompt": "Kindly, Consider the numbers 21 and 68. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0004", "prompt": "Is 28 greater than 59? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0005", "prompt": "Kindly, Is 51 not greater than 98? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0006", "prompt": "Kindly, Is 26 not greater than 17? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0007", "prompt": "Is 16 greater than 66? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0008", "prompt": "Is 55 greater than 8? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0009", "prompt": "Is 67 greater than 86? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0010", "prompt": "Kindly, Consider the numbers 97 and 64. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0011", "prompt": "Consider the numbers 65 and 91. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0012", "prompt": "Please, Is 19 greater than 89? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0013", "prompt": "Consider the numbers 53 and 49. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0014", "prompt": "Please, Is 79 greater than 5? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0015", "prompt": "Please, Is 29 greater than 19? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0016", "prompt": "Please, Is 53 greater than 47? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0017", "prompt": "Is 65 greater than 27? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0018", "prompt": "Kindly, Consider the numbers 60 and 25. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0019", "prompt": "Please, Is 82 greater than 68? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0020", "prompt": "Kindly, Is 32 not greater than 86? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0021", "prompt": "Consider the numbers 64 and 61. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0022", "prompt": "Is 29 greater than 6? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0023", "prompt": "Is 13 not greater than 88? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0024", "prompt": "Please, Is 22 greater than 86? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0025", "prompt": "Is 76 greater than 15? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0026", "prompt": "Is 50 not greater than 20? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0027", "prompt": "Please, Consider the numbers 1 and 87. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0028", "prompt": "Is 61 greater than 55? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0029", "prompt": "Consider the numbers 66 and 12. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "false", "id": "cmp.0030", "prompt": "Is 87 not greater than 21? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0031", "prompt": "Is 33 greater than 63? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0032", "prompt": "Is 31 greater than 76? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0033", "prompt": "Consider the numbers 21 and 38. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0034", "prompt": "Please, Consider the numbers 6 and 47. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "false", "id": "cmp.0035", "prompt": "Is 47 greater than 81? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0036", "prompt": "Is 75 not greater than 36? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0037", "prompt": "Consider the numbers 10 and 35. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0038", "prompt": "Please, Is 90 greater than 3? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0039", "prompt": "Please, Is 37 not greater than 58? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0040", "prompt": "Is 5 not greater than 98? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0041", "prompt": "Is 24 greater than 64? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0042", "prompt": "Kindly, Is 91 not greater than 80? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0043", "prompt": "Kindly, Is 50 not greater than 65? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0044", "prompt": "Is 69 greater than 39? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0045", "prompt": "Consider the numbers 77 and 32. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0046", "prompt": "Please, Is 33 greater than 99? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0047", "prompt": "Is 82 greater than 29? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0048", "prompt": "Kindly, Is 93 greater than 94? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0049", "prompt": "Please, Is 16 not greater than 30? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0050", "prompt": "Please, Is 42 not greater than 87? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0051", "prompt": "Kindly, Is 31 greater than 64? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0052", "prompt": "Is 48 not greater than 5? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0053", "prompt": "Consider the numbers 74 and 70. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0054", "prompt": "Is 54 greater than 38? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0055", "prompt": "Kindly, Is 40 greater than 51? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0056", "prompt": "Consider the numbers 93 and 61. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0057", "prompt": "Kindly, Is 13 not greater than 25? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0058", "prompt": "Is 33 greater than 95? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0059", "prompt": "Kindly, Consider the numbers 29 and 55. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "false", "id": "cmp.0060", "prompt": "Kindly, Is 96 not greater than 47? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0061", "prompt": "Please, Is 26 greater than 86? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0062", "prompt": "Is 38 not greater than 30? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0063", "prompt": "Is 39 greater than 97? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0064", "prompt": "Please, Is 98 not greater than 68? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0065", "prompt": "Kindly, Is 31 greater than 49? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0066", "prompt": "Is 39 not greater than 77? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0067", "prompt": "Consider the numbers 87 and 41. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "false", "id": "cmp.0068", "prompt": "Is 96 not greater than 1? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0069", "prompt": "Is 11 greater than 34? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0070", "prompt": "Please, Is 78 not greater than 38? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0071", "prompt": "Is 66 not greater than 58? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0072", "prompt": "Please, Is 82 not greater than 19? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0073", "prompt": "Please, Is 74 not greater than 57? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0074", "prompt": "Consider the numbers 31 and 83. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0075", "prompt": "Consider the numbers 42 and 79. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0076", "prompt": "Please, Is 51 greater than 43? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0077", "prompt": "Please, Consider the numbers 52 and 60. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0078", "prompt": "Consider the numbers 24 and 16. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0079", "prompt": "Consider the numbers 31 and 30. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0080", "prompt": "Is 8 greater than 12? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0081", "prompt": "Please, Is 28 not greater than 6? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0082", "prompt": "Kindly, Is 80 greater than 36? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0083", "prompt": "Consider the numbers 31 and 72. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0084", "prompt": "Kindly, Is 44 not greater than 20? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0085", "prompt": "Is 78 greater than 63? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0086", "prompt": "Please, Is 74 not greater than 14? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0087", "prompt": "Consider the numbers 78 and 77. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0088", "prompt": "Is 64 not greater than 55? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0089", "prompt": "Kindly, Consider the numbers 76 and 52. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0090", "prompt": "Is 36 not greater than 59? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0091", "prompt": "Is 97 greater than 76? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0092", "prompt": "Is 5 not greater than 86? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0093", "prompt": "Please, Is 15 not greater than 28? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0094", "prompt": "Consider the numbers 49 and 72. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0095", "prompt": "Is 30 not greater than 37? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0096", "prompt": "Consider the numbers 21 and 27. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0097", "prompt": "Please, Is 13 greater than 24? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0098", "prompt": "Please, Is 79 not greater than 56? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0099", "prompt": "Kindly, Is 84 greater than 8? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0100", "prompt": "Kindly, Is 26 not greater than 66? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0101", "prompt": "Consider the numbers 96 and 17. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0102", "prompt": "Please, Is 86 greater than 67? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0103", "prompt": "Is 98 greater than 53? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0104", "prompt": "Is 42 not greater than 24? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0105", "prompt": "Please, Is 65 not greater than 78? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0106", "prompt": "Please, Is 85 not greater than 34? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0107", "prompt": "Consider the numbers 63 and 37. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0108", "prompt": "Is 26 greater than 29? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0109", "prompt": "Is 51 greater than 44? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0110", "prompt": "Kindly, Is 67 not greater than 35? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0111", "prompt": "Please, Is 33 greater than 83? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0112", "prompt": "Please, Consider the numbers 24 and 43. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0113", "prompt": "Is 3 not greater than 15? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0114", "prompt": "Kindly, Consider the numbers 40 and 44. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0115", "prompt": "Kindly, Is 53 greater than 11? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0116", "prompt": "Kindly, Is 28 greater than 43? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0117", "prompt": "Is 43 not greater than 83? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0118", "prompt": "Kindly, Is 70 not greater than 41? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0119", "prompt": "Is 9 greater than 5? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0120", "prompt": "Please, Consider the numbers 85 and 56. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0121", "prompt": "Kindly, Consider the numbers 31 and 19. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0122", "prompt": "Is 66 not greater than 35? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0123", "prompt": "Is 95 not greater than 93? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0124", "prompt": "Is 42 not greater than 3? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0125", "prompt": "Kindly, Consider the numbers 87 and 75. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0126", "prompt": "Kindly, Consider the numbers 63 and 41. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0127", "prompt": "Please, Is 24 not greater than 91? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0128", "prompt": "Is 38 greater than 23? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0129", "prompt": "Consider the numbers 90 and 16. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0130", "prompt": "Kindly, Consider the numbers 27 and 7. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0131", "prompt": "Kindly, Is 7 not greater than 83? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0132", "prompt": "Is 19 greater than 69? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0133", "prompt": "Consider the numbers 20 and 9. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0134", "prompt": "Kindly, Consider the numbers 56 and 6. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0135", "prompt": "Please, Is 15 greater than 36? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0136", "prompt": "Kindly, Consider the numbers 61 and 2. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0137", "prompt": "Please, Consider the numbers 52 and 45. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0138", "prompt": "Kindly, Is 4 greater than 85? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0139", "prompt": "Please, Is 22 greater than 7? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0140", "prompt": "Is 52 not greater than 21? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0141", "prompt": "Is 25 greater than 44? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0142", "prompt": "Please, Is 34 greater than 62? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0143", "prompt": "Kindly, Is 43 greater than 2? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0144", "prompt": "Please, Is 99 greater than 20? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0145", "prompt": "Kindly, Is 19 not greater than 34? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0146", "prompt": "Please, Is 3 not greater than 86? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0147", "prompt": "Is 5 greater than 45? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0148", "prompt": "Is 46 greater than 80? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0149", "prompt": "Kindly, Consider the numbers 69 and 22. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0150", "prompt": "Please, Is 34 not greater than 67? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0151", "prompt": "Please, Is 92 greater than 24? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0152", "prompt": "Kindly, Is 40 not greater than 99? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0153", "prompt": "Kindly, Consider the numbers 44 and 71. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0154", "prompt": "Kindly, Consider the numbers 21 and 37. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0155", "prompt": "Is 93 greater than 89? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0156", "prompt": "Is 32 not greater than 25? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0157", "prompt": "Consider the numbers 40 and 41. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0158", "prompt": "Is 81 greater than 46? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0159", "prompt": "Please, Consider the numbers 30 and 65. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "false", "id": "cmp.0160", "prompt": "Please, Is 31 not greater than 9? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0161", "prompt": "Kindly, Is 93 not greater than 99? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0162", "prompt": "Is 32 greater than 81? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0163", "prompt": "Please, Consider the numbers 8 and 93. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0164", "prompt": "Consider the numbers 55 and 68. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0165", "prompt": "Consider the numbers 63 and 89. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "false", "id": "cmp.0166", "prompt": "Consider the numbers 21 and 94. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0167", "prompt": "Is 46 not greater than 16? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0168", "prompt": "Is 78 not greater than 37? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0169", "prompt": "Is 85 not greater than 93? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0170", "prompt": "Please, Consider the numbers 12 and 92. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0171", "prompt": "Is 75 greater than 83? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0172", "prompt": "Is 47 greater than 88? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0173", "prompt": "Kindly, Is 76 greater than 83? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0174", "prompt": "Is 3 not greater than 29? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0175", "prompt": "Is 20 greater than 36? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0176", "prompt": "Consider the numbers 69 and 16. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0177", "prompt": "Kindly, Consider the numbers 9 and 83. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0178", "prompt": "Kindly, Is 55 not greater than 38? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0179", "prompt": "Please, Is 60 greater than 80? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0180", "prompt": "Kindly, Is 97 not greater than 66? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0181", "prompt": "Is 75 not greater than 23? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0182", "prompt": "Is 13 not greater than 45? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0183", "prompt": "Kindly, Consider the numbers 50 and 11. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0184", "prompt": "Is 19 not greater than 93? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0185", "prompt": "Please, Is 87 not greater than 60? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0186", "prompt": "Please, Consider the numbers 58 and 22. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0187", "prompt": "Is 35 not greater than 63? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0188", "prompt": "Kindly, Consider the numbers 73 and 56. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0189", "prompt": "Please, Consider the numbers 81 and 19. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "true", "id": "cmp.0190", "prompt": "Is 42 greater than 11? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0191", "prompt": "Kindly, Is 58 not greater than 73? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0192", "prompt": "Is 25 not greater than 8? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "false", "id": "cmp.0193", "prompt": "Is 23 greater than 86? Answer with one word: true or false.", "template": "direct"}
+{"expected": "false", "id": "cmp.0194", "prompt": "Kindly, Consider the numbers 64 and 84. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0195", "prompt": "Please, Is 41 greater than 46? Answer with one word: true or false.", "template": "direct"}
+{"expected": "true", "id": "cmp.0196", "prompt": "Kindly, Is 19 not greater than 33? Answer with one word: true or false.", "template": "direct-negated"}
+{"expected": "true", "id": "cmp.0197", "prompt": "Consider the numbers 2 and 96. Is the second number greater than the first number? Answer with one word: true or false.", "template": "ordinal-second"}
+{"expected": "true", "id": "cmp.0198", "prompt": "Consider the numbers 23 and 1. Is the first number greater than the second number? Answer with one word: true or false.", "template": "ordinal-first"}
+{"expected": "false", "id": "cmp.0199", "prompt": "Kindly, Is 96 not greater than 82? Answer with one word: true or false.", "template": "direct-negated"}

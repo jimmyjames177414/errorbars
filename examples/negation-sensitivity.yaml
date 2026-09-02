@@ -1,0 +1,62 @@
+# The demo experiment. Runs offline, with no API key and no network.
+#
+#   errorbars run examples/negation-sensitivity.yaml --dry-run    # what it would cost
+#   errorbars run examples/negation-sensitivity.yaml --analyze    # run it and analyse it
+#
+# The provider is `mock`: a deterministic simulator, not a language model. Nothing
+# produced by this file is a measurement of any real system. It exists to show the shape
+# of the output. See src/errorbars/providers/mock.py for exactly what it simulates.
+#
+# To point this at a real model, replace the `models` block with something like:
+#
+#   models:
+#     - provider: openai-compatible
+#       base_url: http://localhost:11434/v1
+#       model: qwen3:8b
+#       api_key_env: OPENAI_API_KEY        # omit for a local server that needs no key
+#       params: { temperature: 0.0, max_tokens: 8 }
+
+version: "0.1"
+name: negation-sensitivity
+
+dataset:
+  path: data/comparisons.jsonl
+
+models:
+  - provider: mock
+    model: comparison-sim-v1
+    params: { temperature: 0.0, max_tokens: 8 }
+
+interventions:
+  # kind: noop is the control arm. Without one there is no effect to report, only a
+  # number. Delete this entry and errorbars injects one and warns you about it.
+  - id: control
+    kind: noop
+
+  - id: strip-negation
+    kind: remove
+    selector: { type: lexical_class, value: negation }
+
+  - id: strip-politeness
+    kind: remove
+    selector: { type: lexical_class, value: politeness }
+
+  - id: strip-articles
+    kind: remove
+    selector: { type: lexical_class, value: articles }
+
+scorer: first_word
+
+trials:
+  repeats: 5
+  seed: 7
+
+analysis:
+  alpha: 0.05
+  power: 0.80
+  bootstrap_resamples: 10000
+  permutations: 10000
+  multiplicity: holm
+
+budget:
+  max_calls: 5000

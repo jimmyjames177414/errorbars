@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jimmyjames177414/errorbars/schemas/cxs-model-descriptor.schema.json",
+  "title": "CXS ModelDescriptor v0.1",
+  "description": "Identifies what was asked, precisely enough to re-run it.",
+  "type": "object",
+  "required": ["provider", "model", "params"],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "description": "Adapter family, e.g. 'openai-compatible', 'mock', 'cassette'."
+    },
+    "base_url": {
+      "type": ["string", "null"],
+      "description": "Endpoint root. Null for providers that make no network call."
+    },
+    "model": { "type": "string" },
+    "params": {
+      "type": "object",
+      "description": "Recorded verbatim. 'seed' is nullable because many providers ignore it, and a run must state whether it was deterministic rather than implying it.",
+      "additionalProperties": true
+    },
+    "observed_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": true
+}
