@@ -262,8 +262,10 @@ binary-null false positive rate: 0.048 over 1000 simulations
   formula** at one repeat with no pairing, which is what makes those hand checks bind on
   the general case too.
 
-`mypy --strict` and `ruff` are clean. CI runs Python 3.10–3.13 on Linux, plus macOS and
-Windows, **with no secrets configured at all**.
+`mypy --strict` and `ruff` are clean. The figures above were measured on Python 3.10.12,
+Linux — run the commands yourself and you should get the same ones, since every seed is
+fixed. CI is configured for Python 3.10–3.13 on Linux plus macOS and Windows,
+**with no secrets configured at all**, and fails the build if scipy ever appears.
 
 ## Contributing
 
