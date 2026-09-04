@@ -16,7 +16,7 @@ All notable changes to this project are documented here. The format follows
   to.
 - **CXS 0.1.1 `verdict` support.** `passed` is a boolean and cannot represent "we do not
   know". Outcomes carrying `verdict: "inconclusive"` or `"error"` are now **skipped,
-  counted and reported** rather than raising or being coerced to a failure — they are
+  counted and reported** rather than raising or being coerced to a failure. They are
   excluded from every rate, interval and denominator. `verdict: "true"` / `"false"` score
   as `passed` does, and a record where `passed` and `verdict` disagree, or where an
   unresolved verdict carries `passed`/`score` anyway, is rejected as malformed.
@@ -38,19 +38,19 @@ First release. A small statistics layer for LLM experiments.
 
 ### Added
 
-- **`errorbars power`** — minimum detectable effect and required N for a paired,
+- **`errorbars power`**: minimum detectable effect and required N for a paired,
   repeated eval design. No config, no network, no API key, writes nothing. Models the two
   correlation parameters that actually decide what a run can see: `--icc` (repeats within
   an item) and `--pair-corr` (item difficulty across arms). Prints a sensitivity block
   because both are assumptions until measured, and defaults `--pair-corr` to 0 so the
   headline number is never optimistic.
-- **`errorbars analyze <results-dir>`** — paired effects, bootstrap confidence intervals,
+- **`errorbars analyze <results-dir>`**: paired effects, bootstrap confidence intervals,
   a paired permutation test, Holm–Bonferroni correction, and a
   significant / null / **underpowered** verdict. Reads any CXS v0.1 results directory,
   including one written by a different tool. Measures ICC and pairing correlation from the
   data and reports them, so they can be fed back into `power`. Writes `report.json` and
   `report.md`.
-- **`errorbars run <experiment.yaml>`** — a small intervention-grid runner with a
+- **`errorbars run <experiment.yaml>`**: a small intervention-grid runner with a
   mandatory control arm, `--dry-run` budgeting, `--max-calls`, a content-addressed
   response cache, and resume from an append-only `trials.jsonl`.
 - Statistics, all implemented here with no scipy: paired percentile bootstrap resampling
@@ -65,7 +65,7 @@ First release. A small statistics layer for LLM experiments.
 - Scorers: `exact_match`, `contains`, `first_word`, `regex`. All deterministic and local.
 - Vendored CXS v0.1 JSON Schemas under `schemas/`, with a conformance test that validates
   a real run of the shipped demo against them, line by line.
-- **`docs/statistics.md`** — a plain-language explanation of why a bare eval percentage is
+- **`docs/statistics.md`**: a plain-language explanation of why a bare eval percentage is
   usually meaningless, written for an engineer with no statistics background, with worked
   numbers that are all reproducible by a documented command.
 

@@ -7,7 +7,7 @@ correct, so contributions are held to that standard rather than to a house style
 
 Not for anything. The whole test suite runs offline against a deterministic simulator, and
 CI runs with **no secrets configured at all**. If you find yourself needing a key to work
-on something, that is a bug in this repository — please open an issue.
+on something, that is a bug in this repository. Please open an issue.
 
 ```bash
 git clone https://github.com/jimmyjames177414/errorbars
@@ -46,7 +46,7 @@ formatting.
 Every number in `README.md` and `docs/statistics.md` must be reproducible by a command
 printed next to it, or explicitly labelled synthetic. There are no exceptions and no
 "approximately". If you change something that moves a number, re-run the command and paste
-the new output — do not adjust the digits by hand.
+the new output. Do not adjust the digits by hand.
 
 Both documents also have a list of things this project must never claim (see `NOVELTY.md`
 §8). "No framework reports variance" is on it, because Inspect AI does, and a disprovable
@@ -55,7 +55,7 @@ claim in the first screenful would cost more credibility than the feature is wor
 ## Good first issues
 
 - **Add a scorer.** `src/errorbars/scorers.py`, one function plus a registry entry. Keep
-  it deterministic and local — an LLM-judge scorer adds variance the statistics here do
+  it deterministic and local: an LLM-judge scorer adds variance the statistics here do
   not model, which is why there isn't one.
 - **Add an output format.** `src/errorbars/report.py` already writes a terminal table,
   JSON and Markdown. CSV would be useful.

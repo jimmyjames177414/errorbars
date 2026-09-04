@@ -30,7 +30,7 @@ than those 200. If you had picked a different 200, you would have got a differen
 This is the big one, and it does not go away by running the same 200 questions again.
 
 **The model is stochastic.** Even at temperature 0, most production endpoints do not
-guarantee bit-identical output — batching, hardware, and kernel selection all leak in. Ask
+guarantee bit-identical output: batching, hardware, and kernel selection all leak in. Ask
 the same question five times and you may get four rights and a wrong.
 
 **The scorer is a judgement.** Exact-match is deterministic. An LLM judge is not, and adds
@@ -69,7 +69,7 @@ Your 4-point win is not a win. It is not a loss either. It is a number you canno
 interpret, and the difference between those two statements is the entire subject of this
 document.
 
-That figure — the **minimum detectable effect**, or MDE — is the single most useful number
+That figure, the **minimum detectable effect** or MDE, is the single most useful number
 in this repository, and almost nobody computes it. It costs nothing: no model calls, no
 API key, no data. You can run it before you have written the eval.
 
@@ -104,7 +104,7 @@ outcome variance that lives *between* items rather than *within* them.
 | 0.5 | a typical mixed eval | about a third of the nominal gain |
 | 1.0 | every item deterministically right or wrong | **nothing at all** |
 
-Real evals sit high, because most items are not marginal — they are firmly inside or
+Real evals sit high, because most items are not marginal. They are firmly inside or
 firmly outside what the model can do. At ICC 0.9, a thousand calls bought you almost
 exactly what two hundred would have. You paid five times over for a rounding error.
 
@@ -140,7 +140,7 @@ Same thousand calls. 11.7 pp becomes 3.8 pp, purely from running both arms on th
 questions. That is a bigger improvement than quintupling your repeat count, and it costs
 nothing.
 
-`pair-corr` is how strongly item difficulty carries across the two arms — hard questions
+`pair-corr` is how strongly item difficulty carries across the two arms: hard questions
 staying hard. It is usually high, because difficulty is mostly a property of the question.
 The default is `0.0`, which assumes pairing buys nothing, so the headline number is never
 optimistic. Measure yours with `errorbars analyze` and put the real value in.
@@ -216,7 +216,7 @@ items; draw 200 items *from your own 200, with replacement*; compute the score; 
 ten thousand times; look at where the middle 95% of those scores fell. That range is your
 interval.
 
-It sounds like cheating and it is not — it is a well-understood way of asking "how much
+It sounds like cheating and it is not. It is a well-understood way of asking "how much
 would this number have moved if the sample had come out differently", and it needs no
 assumption that your data is bell-shaped, which eval data emphatically is not.
 
@@ -251,7 +251,7 @@ everything by eight and throws away real findings; Holm is strictly better and n
 worse, which is why there is no reason to use Bonferroni.
 
 `errorbars` reports raw and adjusted p-values side by side and says which is which. In the
-table above, `strip-articles` has a raw p of 0.050 and a Holm-adjusted p of 0.099 — it was
+table above, `strip-articles` has a raw p of 0.050 and a Holm-adjusted p of 0.099, so it was
 already sitting exactly on the line, and correcting for the fact that three interventions
 were tested pushes it clearly over.
 
@@ -285,7 +285,7 @@ dishonesty, and it would make the tool disagree with every other tool for no sta
 reason.
 
 **When to reach for `--simultaneous-ci`.** When you are scanning the interval column
-across arms to decide what to chase — screening rather than reading one result. Then you
+across arms to decide what to chase, screening rather than reading one result. Then you
 want a guarantee that covers the whole set:
 
 ```console
@@ -298,8 +298,8 @@ strip-politeness   -0.1pp           [-2.0, +1.8]    1.000                  1.000
 strip-articles     -2.3pp           [-5.1, +0.3]    0.051                  0.103  200  UNDERPOWERED
 ```
 
-Each interval is now built at `α/m` — the `α/2m` and `1 − α/2m` percentiles of the
-bootstrap distribution instead of `α/2` and `1 − α/2` — so all three hold together at 95%.
+Each interval is now built at `α/m`, the `α/2m` and `1 − α/2m` percentiles of the
+bootstrap distribution instead of `α/2` and `1 − α/2`, so all three hold together at 95%.
 They are strictly wider, which is the price of the stronger guarantee. Both MDEs move to
 the same level too, so the whole row now runs on one error rate.
 
@@ -307,7 +307,7 @@ Notice `strip-articles` crossing zero at `[-5.1, +0.3]` once the correction is a
 That is the correction doing its job.
 
 **One honest wrinkle.** The simultaneous intervals use Bonferroni, not Holm, because
-there is no accepted step-down analogue for *intervals* — Holm's extra power comes from
+there is no accepted step-down analogue for *intervals*: Holm's extra power comes from
 rejecting sequentially, which produces decisions rather than ranges. So the intervals are
 slightly conservative relative to the Holm p-values beside them, and an interval can
 straddle zero while its adjusted p clears alpha. That is a real limitation of the method,
@@ -320,7 +320,7 @@ truncated, a provider drops the connection part-way, a judge declines, a parser 
 a response nobody anticipated.
 
 `passed` is a boolean, so there is nowhere honest to put that. The tempting move is
-`passed: false` — one character of code, and the run keeps going. Here is what that
+`passed: false`, one character of code, and the run keeps going. Here is what that
 character costs, on the fixture shipped with this repository, with a tenth of the trials
 unresolved:
 
@@ -342,15 +342,15 @@ folded            69.6%    -23.3pp    [-31.2, -15.4]    significant
 ```
 
 **7.3 percentage points on the headline number**, from a change nobody would write in a
-commit message. Not noise — bias, in a known direction, applied to every arm at once.
+commit message. Not noise, but bias, in a known direction, applied to every arm at once.
 
 Two things are worth reading carefully in that table.
 
 **The rate is badly wrong; the effect much less so.** The control arm loses 7.3 points and
 so does every other arm, so the *difference* between them only moves 1.7. That partial
 cancellation is exactly what makes this bug survive code review: a team reporting deltas
-sees a number that looks nearly right, while every absolute rate they quote — in a
-release note, a dashboard, a slide — is off by more than most of the effects they are
+sees a number that looks nearly right, while every absolute rate they quote, in a
+release note, a dashboard or a slide, is off by more than most of the effects they are
 chasing. And the cancellation is only partial. It is complete only if the unresolved
 trials fall evenly across arms, which is precisely what you cannot assume when an
 intervention is the thing making responses harder to parse.
@@ -361,7 +361,7 @@ on data that already had the error baked into it.
 
 So `errorbars` refuses to do it. An outcome carrying CXS 0.1.1's
 `verdict: "inconclusive"` or `"error"` is **skipped, counted, and reported above the
-results table** — never scored, never coerced to zero, never admitted to a denominator:
+results table**: never scored, never coerced to zero, never admitted to a denominator:
 
 ```
   UNRESOLVED    72 inconclusive + 0 error trial(s) skipped, excluded from every rate
@@ -372,7 +372,7 @@ values. `docs/interop.md` has the four-file shape. If it does not, nothing chang
 producer emitting `passed` alone is still perfectly valid.
 
 **What this does not fix, and cannot.** Skipping is right, but the trials that remain are
-not a random sample of the trials you meant to run — the ones that failed to resolve may
+not a random sample of the trials you meant to run, and the ones that failed to resolve may
 be exactly the hard ones. `errorbars` computes intervals over what resolved and has no
 way to check whether that remainder is representative. Statisticians call this missing
 not at random, and it is unsolvable from inside the tool. Skipping is right; assuming the
@@ -393,7 +393,7 @@ make deliberately.
 
 Skippable. Everything above works without this section.
 
-**Wilson score interval** for a single proportion — the sane replacement for
+**Wilson score interval** for a single proportion, the sane replacement for
 `p ± 1.96·sqrt(p(1-p)/n)`, which produces intervals running past 100% at the proportions
 evals actually live at:
 
@@ -418,7 +418,7 @@ k      = ρ_w·(1 - ρ_pair) + (1 - ρ_w)/m
 
 `k` is the design factor, and the two boundary cases are what make it checkable. At `m=1,
 ρ_pair=0` it equals 1 and the required-N expression below collapses to the textbook
-unpaired two-proportion formula — which is exactly how the tests verify it, against hand
+unpaired two-proportion formula, which is exactly how the tests verify it, against hand
 computation. At `ρ_pair=0` it equals `DEFF/m`, the classical cluster correction.
 
 **Required items** (both arms use the same items, so this is the item count, not double
@@ -466,14 +466,14 @@ by an amount this package does not estimate. That is why no LLM-judge scorer shi
 
 **A default null verdict is self-referential.** When you do not name a margin, `errorbars`
 uses the run's own minimum detectable effect, and both that and the interval shrink at the
-same rate — so a bigger run does not make "null" easier to earn. The claim that *does*
+same rate, so a bigger run does not make "null" easier to earn. The claim that *does*
 improve with N is a null against a margin you chose in advance. Pass `--sesoi 2pp` and mean
 it. Equivalence cannot be established without an equivalence margin.
 
 **And that default margin is a pragmatic composite.** It is the *smaller* of the design
 MDE and the precision actually achieved, chosen because it fails in the safe direction
 whichever way the two disagree. No paper prescribes that particular rule and there is no
-literature behind it — it is a judgement call, documented so you can disagree with it.
+literature behind it. It is a judgement call, documented so you can disagree with it.
 Naming your own `--sesoi` sidesteps it entirely.
 
 **Intervals and p-values carry different error rates by default.** Per-comparison
@@ -526,11 +526,11 @@ uv run pytest tests/test_power.py tests/test_proportions.py -q
   Evaluations**, [arXiv:2411.00640](https://arxiv.org/abs/2411.00640). This project is
   named after it. Start here.
 - **Resolution Diagnostics for Paired LLM Evaluation**,
-  [arXiv:2605.30315](https://arxiv.org/abs/2605.30315) — paired testing, MDE at current N,
+  [arXiv:2605.30315](https://arxiv.org/abs/2605.30315): paired testing, MDE at current N,
   Holm, cluster correction.
 - Newcombe (1998), *Two-sided confidence intervals for the single proportion*, Statistics
-  in Medicine 17:857-872 — the source of the Wilson reference values the tests check
+  in Medicine 17:857-872, the source of the Wilson reference values the tests check
   against.
 - Efron & Tibshirani, *An Introduction to the Bootstrap*, ch. 13.
-- Phipson & Smyth (2010), *Permutation p-values should never be zero* — why the p-value
+- Phipson & Smyth (2010), *Permutation p-values should never be zero*, on why the p-value
   here is `(b+1)/(B+1)` and not `b/B`.

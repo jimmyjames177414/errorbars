@@ -21,7 +21,7 @@ results/my-run/
   outcomes.jsonl         # one line per score
 ```
 
-**`manifest.json`** — the reproducibility envelope. Four fields are required:
+**`manifest.json`**: the reproducibility envelope. Four fields are required:
 
 ```json
 {
@@ -42,7 +42,7 @@ looks for an intervention with `"kind": "noop"`, then for an arm named something
 `control` or `baseline`, and refuses rather than guessing if neither works. An effect
 measured against an arbitrarily chosen arm would be worse than an error.
 
-**`interventions.json`** — one entry per arm. Exactly one should be the control:
+**`interventions.json`**: one entry per arm. Exactly one should be the control:
 
 ```json
 [
@@ -53,7 +53,7 @@ measured against an arbitrarily chosen arm would be worse than an error.
 ]
 ```
 
-**`trials.jsonl`** — one line per model call. Only four fields are required
+**`trials.jsonl`**: one line per model call. Only four fields are required
 (`trial_id`, `intervention_id`, `item_id`, `response_text`), though `repeat_index` and
 `model` make the analysis better:
 
@@ -61,17 +61,17 @@ measured against an arbitrarily chosen arm would be worse than an error.
 {"trial_id": "t-0001", "intervention_id": "baseline", "item_id": "q-042", "repeat_index": 0, "response_text": "yes", "model": {"provider": "openai-compatible", "model": "gpt-oss-20b", "params": {"temperature": 0.0}}}
 ```
 
-Note that the *prompt itself* is not in the schema — only `prompt_sha256`, if you want it.
+Note that the *prompt itself* is not in the schema, only `prompt_sha256`, if you want it.
 That is deliberate: a results directory can then be shared for re-analysis without handing
 over your dataset.
 
-**`outcomes.jsonl`** — one line per score, joined to trials by `trial_id`:
+**`outcomes.jsonl`**: one line per score, joined to trials by `trial_id`:
 
 ```json
 {"trial_id": "t-0001", "scorer": "exact_match:v1", "passed": true, "verdict": "true"}
 ```
 
-`score` (a float), `passed` (a boolean), or `verdict` (CXS 0.1.1) — any of the three is
+`score` (a float), `passed` (a boolean), or `verdict` (CXS 0.1.1). Any of the three is
 enough. Partial-credit scorers should write `score`; pass/fail harnesses can write only
 `passed` and errorbars will read it as 1.0 / 0.0.
 
@@ -90,7 +90,7 @@ Two rules, and errorbars enforces both:
 * **Where `passed` and `verdict` are both present they must agree.** A record saying
   `passed: false, verdict: "true"` is malformed and is rejected rather than guessed at.
 * **Omit `passed` and `score` entirely for `inconclusive` and `error`.** There is no
-  honest value for either — `inconclusive` is not a failure. A reader that understands
+  honest value for either; `inconclusive` is not a failure. A reader that understands
   only `passed` then skips the record instead of silently counting it as one, which is
   the intended failure mode.
 
@@ -113,17 +113,17 @@ Being explicit about this matters, because "compatible" is a word people use loo
 
 - Unknown fields anywhere. Every schema sets `additionalProperties: true`. Your harness's
   `run_group`, `wall_clock` and `judge_notes` are ignored, not fatal.
-- A missing `interventions.json` — arms are then derived from the trials themselves.
-- A missing `repeat_index` — order of appearance is used.
+- A missing `interventions.json`: arms are then derived from the trials themselves.
+- A missing `repeat_index`: order of appearance is used.
 - `passed` with no `score`, or `score` with no `passed`.
-- An unfamiliar `cxs_version` — you get a note and a best-effort read, not a refusal.
+- An unfamiliar `cxs_version`: you get a note and a best-effort read, not a refusal.
 - Unbalanced repeats per item, and items present in one arm but not another. Both are
   reported in the notes rather than silently absorbed.
 
 **Refused**, because guessing would be worse than failing:
 
 - No manifest, or no trials.
-- An ambiguous control arm — two `noop` interventions, or none identifiable. Pass
+- An ambiguous control arm: two `noop` interventions, or none identifiable. Pass
   `--control <id>`.
 - Only one arm. An effect needs something to be an effect *against*.
 - More than one model with no `--model` chosen. Pooling two models into one effect
@@ -138,7 +138,7 @@ fields errorbars has never heard of. `tests/test_ingest.py` reads it end to end,
 `tests/test_cxs_conformance.py` validates it against the vendored schemas.
 
 Regenerate it with `python tests/fixtures/make_foreign_fixture.py`. It is synthetic and
-seeded, and labelled as such in its own manifest `notes` field — nothing in it was
+seeded, and labelled as such in its own manifest `notes` field. Nothing in it was
 produced by a language model.
 
 Without that fixture, "reads other tools' output" would be an untested sentence in a

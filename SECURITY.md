@@ -21,7 +21,7 @@ specific about it is more useful than a generic policy:
 **It reads files you point it at.** `analyze` parses JSON and JSONL from a results
 directory; `run` parses a YAML spec and a JSONL dataset. YAML is parsed with
 `yaml.safe_load`, never `yaml.load`, so a spec cannot construct arbitrary Python objects.
-A results directory from an untrusted source is still untrusted input — it can make the
+A results directory from an untrusted source is still untrusted input. It can make the
 tool raise or produce nonsense, and the statistics it reports are only as trustworthy as
 the trials file they came from.
 

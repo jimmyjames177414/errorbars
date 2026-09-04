@@ -15,7 +15,7 @@
 ---
 
 **This project caught itself doing bad statistics.** Partway through building it, `errorbars
-power` was pointed at its own planned design — 200 items, 5 repeats — and reported an effective
+power` was pointed at its own planned design (200 items, 5 repeats) and reported an effective
 sample size *smaller than the item count*. That is arithmetically impossible: effective n is
 `items × repeats / design effect`, and the design effect can never exceed the repeat count, so
 for that design the answer is pinned between 200 and 1,000. The power model was wrong.
@@ -55,7 +55,7 @@ Power analysis  (alpha=0.05, power=80%, two-sided, paired)
 <img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/demo.png" alt="errorbars power analysis output" width="100%">
 
 Two hundred items and a thousand model calls cannot reliably resolve anything smaller
-than **9 percentage points**, unless both arms run on the same items. That is the number
+than 9 percentage points, unless both arms run on the same items. That is the number
 almost nobody computes, and it costs nothing to get.
 
 ## Why a 4-point win is usually not a win
@@ -68,7 +68,7 @@ from "our run was too small to notice."
 That last distinction is the point of this tool. In every other harness both come out as
 `p > 0.05`, and they mean opposite things.
 
-Here it is on results — yours, or another tool's:
+Here it is on results, yours or another tool's:
 
 ```console
 $ git clone -q https://github.com/jimmyjames177414/errorbars && cd errorbars
@@ -143,8 +143,8 @@ uv tool install git+https://github.com/jimmyjames177414/errorbars
 The example specs and fixtures live in the repository rather than the wheel, so clone it to
 run anything that takes a file path.
 
-Runtime dependencies: `numpy` and `PyYAML`. **No scipy** — Holm, the permutation test and
-the Wilson interval are implemented here, about twenty lines each, because scipy's install
+Runtime dependencies: `numpy` and `PyYAML`. No scipy: Holm, the permutation test and the
+Wilson interval are implemented here, about twenty lines each, because scipy's install
 weight would ruin cold-start for a tool whose flagship command makes no network calls at
 all.
 
@@ -153,10 +153,10 @@ all.
 | Command | What it does |
 |---|---|
 | `errorbars power` | MDE and required N for a design. No config, no network, no key, writes nothing. |
-| `errorbars analyze <dir>` | Paired effects, bootstrap intervals, Holm correction and a verdict over any CXS results directory — including one another tool wrote. |
+| `errorbars analyze <dir>` | Paired effects, bootstrap intervals, Holm correction and a verdict over any CXS results directory, including one another tool wrote. |
 | `errorbars run <spec.yaml>` | A small intervention-grid runner with a mandatory control arm. |
 
-Full statistical background, written for an engineer with no stats: **[docs/statistics.md](docs/statistics.md)**.
+Full statistical background, written for an engineer with no stats: [docs/statistics.md](docs/statistics.md).
 That document is the best single reason to look at this repository.
 
 ## What "paired" means, and why it is the whole game
@@ -166,7 +166,7 @@ Run the control and the treatment on the same items, and compare each item to it
 Most of the variance in an eval score comes from *which questions you happened to pick*.
 Both arms answering the same questions makes that variance shared, and the difference
 cancels it out. In the sensitivity block above it takes the MDE from 9.3 pp to 4.5 pp for
-the same thousand calls — a bigger gain than quintupling your repeat count, and free.
+the same thousand calls: a bigger gain than quintupling your repeat count, and free.
 
 An effect measured without a control arm is not an effect size. `errorbars run` injects a
 control if your spec has none, and warns you loudly, because injecting one silently would
@@ -175,16 +175,16 @@ misrepresent your design.
 ## Reading results other tools produced
 
 `errorbars analyze` reads the [CXS v0.1.1](schemas/README.md) interchange format. The
-claim is about **files, not imports** — nothing here imports another package, and no other
+claim is about files, not imports: nothing here imports another package, and no other
 package imports this one.
 
 It also handles the case a boolean cannot: an outcome marked `inconclusive` or `error` is
-**skipped, counted and reported above the table**, never scored and never folded into a
+skipped, counted and reported above the table, never scored and never folded into a
 denominator.
 
 That is not a formality. On the shipped fixture with a tenth of the trials unresolved,
 squashing them into `passed: false` moves the headline rate by **7.3 percentage points**
-— 76.9% becomes 69.6% — while the measured *effect* moves only 1.7pp, because the bias
+(76.9% becomes 69.6%) while the measured *effect* moves only 1.7pp, because the bias
 lands on every arm at once. That partial cancellation is what lets the bug survive review:
 the deltas look nearly right while every absolute rate you quote is wrong by more than
 most of the effects you are chasing. Both readings still print "significant".
@@ -199,15 +199,15 @@ different tool's style: another `tool.name`, arm names this project would never 
 never heard of. `tests/test_ingest.py` reads it. That fixture is the proof of the claim;
 without it the sentence above would just be marketing.
 
-## Prior art — read this before believing the pitch
+## Prior art: read this before believing the pitch
 
 This is a small library standing next to some very large, very good projects. Naming them
 properly:
 
 | Project | Stars | What it already does |
 |---|---|---|
-| [promptfoo](https://github.com/promptfoo/promptfoo) | 24,765 | YAML-native eval spec since 2023, `transformVars` input transforms, `evaluateOptions.repeat`, nine export formats, hosted sharing. **Acquired by OpenAI on 2026-03-09.** |
-| [Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai) (UK AISI) | 2,686 | `--epochs`, `--epochs-reducer` (`mean/median/mode/max/at_least_{n}/pass_at_{k}`), and **scorers that report `stderr`**. It does trials and variance well. |
+| [promptfoo](https://github.com/promptfoo/promptfoo) | 24,765 | YAML-native eval spec since 2023, `transformVars` input transforms, `evaluateOptions.repeat`, nine export formats, hosted sharing. Acquired by OpenAI on 2026-03-09. |
+| [Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai) (UK AISI) | 2,686 | `--epochs`, `--epochs-reducer` (`mean/median/mode/max/at_least_{n}/pass_at_{k}`), and scorers that report `stderr`. It does trials and variance well. |
 | [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness) | 13,872 | The de-facto academic benchmark runner, YAML-native. |
 
 Star counts verified via the GitHub API on 2026-09-02.
@@ -228,23 +228,23 @@ Methodology this builds on rather than invents:
 
 Three things, and only three:
 
-1. **A per-intervention effect table.** Nothing surveyed labels results by intervention and
+1. A per-intervention effect table. Nothing surveyed labels results by intervention and
    emits "removing X moved the score by δ, N items, 95% CI". promptfoo has
    `redteam.strategies` and `transformVars` but has never joined them into an effect report.
-2. **Null results as a first-class output.** Everything else optimises for "did it pass".
+2. Null results as a first-class output. Everything else optimises for "did it pass".
    Nothing reports "this provably did nothing, and here is the power calculation showing we
    could have seen it if it hadn't."
-3. **Power and MDE up front.** No surveyed tool answers "how many items do I need to detect
+3. Power and MDE up front. No surveyed tool answers "how many items do I need to detect
    two points?" The statistics are published; the tooling is not.
 
 ## What this is not
 
-**It is a feature, not a platform.** Roughly "the statistics your eval harness doesn't do."
-promptfoo's architecture is arguably one design decision away from absorbing it — a risk
+It is a feature, not a platform. Roughly "the statistics your eval harness doesn't do."
+promptfoo's architecture is arguably one design decision away from absorbing it, a risk
 the OpenAI acquisition sharpens. Calling it a platform would be the exact dishonesty this
 repository is trying to avoid.
 
-**It is not an eval harness and will not replace promptfoo.** There is no test-case
+It is not an eval harness and will not replace promptfoo. There is no test-case
 management, no assertion library, no CI reporting, no web UI, no dataset tooling, no
 red-teaming, no tracing.
 
@@ -260,28 +260,28 @@ It is deliberately less capable than promptfoo and is not trying to catch up.
 
 Every one of these is real, and none of them is going to be fixed by a flag.
 
-- **Bootstrap intervals assume items are independent draws.** 200 paraphrases of 5
-  questions is really 5 items, every interval here would be far too narrow, and errorbars
-  cannot detect that or warn you.
-- **The design-effect correction is an approximation**, not a mixed-effects model. Two
-  scalars standing in for a full random-effects structure.
-- **Frequentist only.** No priors, no posteriors, no Bayes factors.
-- **A three-valued scorer is read, not modelled.** Outcomes marked `inconclusive` or
-  `error` (CXS 0.1.1) are skipped, counted and reported rather than scored — they never
-  enter a denominator. But errorbars models no *uncertainty* about why they were
-  unresolved, so a run that is 40% inconclusive gets intervals computed over the 60% that
-  resolved, which may not be a representative 60%.
-- **A noisy scorer adds variance that is not modelled.** LLM-judge scores carry their own
+- Bootstrap intervals assume items are independent draws. 200 paraphrases of 5 questions is
+  really 5 items, every interval here would be far too narrow, and errorbars cannot detect
+  that or warn you.
+- The design-effect correction is an approximation, not a mixed-effects model. Two scalars
+  standing in for a full random-effects structure.
+- Frequentist only. No priors, no posteriors, no Bayes factors.
+- A three-valued scorer is read, not modelled. Outcomes marked `inconclusive` or `error`
+  (CXS 0.1.1) are skipped, counted and reported rather than scored; they never enter a
+  denominator. But errorbars models no *uncertainty* about why they were unresolved, so a
+  run that is 40% inconclusive gets intervals computed over the 60% that resolved, which may
+  not be a representative 60%.
+- A noisy scorer adds variance that is not modelled. LLM-judge scores carry their own
   disagreement, and treating a judge as ground truth understates uncertainty by an amount
   this package does not estimate. That is why no LLM-judge scorer ships.
-- **A default null verdict is self-referential.** With no `--sesoi`, the margin is the run's
-  own MDE, and both it and the interval shrink at the same rate — so a bigger run does not
-  make "null" easier to earn. The claim that *does* improve with N is a null against a
-  margin you chose in advance. Pass `--sesoi 2pp` and mean it.
-- **Association under intervention, on your corpus, with your model.** Broader causal
-  claims are yours to make, not the tool's output.
-- **The power model is a normal approximation.** At very small N, or baselines within a
-  couple of standard errors of 0 or 1, treat the answers as indicative.
+- A default null verdict is self-referential. With no `--sesoi`, the margin is the run's own
+  MDE, and both it and the interval shrink at the same rate, so a bigger run does not make
+  "null" easier to earn. The claim that *does* improve with N is a null against a margin you
+  chose in advance. Pass `--sesoi 2pp` and mean it.
+- Association under intervention, on your corpus, with your model. Broader causal claims are
+  yours to make, not the tool's output.
+- The power model is a normal approximation. At very small N, or baselines within a couple of
+  standard errors of 0 or 1, treat the answers as indicative.
 
 ## Not built yet
 
@@ -296,9 +296,9 @@ than an admitted gap. Each of these is a `help-wanted` issue:
 
 ## Is the statistics right?
 
-Fair question for a repository whose entire value is that the arithmetic is correct — and,
-given the bug at the top of this file, a question it has already failed once. It is checked
-against things outside this codebase, not against its own past output:
+Fair question for a repository whose entire value is that the arithmetic is correct. Given
+the bug at the top of this file, it is a question this one has already failed once. The
+arithmetic is checked against things outside this codebase, not against its own past output:
 
 ```console
 $ uv run pytest -q -m "not live"
@@ -313,21 +313,21 @@ continuous-null false positive rate: 0.051 over 2000 simulations
 binary-null false positive rate: 0.048 over 1000 simulations
 ```
 
-- The **95% interval is verified by simulation**: a thousand complete experiments from a
+- The 95% interval is verified by simulation: a thousand complete experiments from a
   distribution whose true value we chose, counting how often the interval contains it.
-- The **permutation test's false-positive rate** under a true null lands on alpha.
-- **Wilson** reproduces all four reference intervals in Newcombe (1998).
-- **Holm** reproduces R's `p.adjust(..., method = "holm")` and the Wikipedia worked example.
-- **Required N** reproduces hand computation at three points: 80%→85% needs 906 per arm,
+- The permutation test's false-positive rate under a true null lands on alpha.
+- Wilson reproduces all four reference intervals in Newcombe (1998).
+- Holm reproduces R's `p.adjust(..., method = "holm")` and the Wikipedia worked example.
+- Required N reproduces hand computation at three points: 80%→85% needs 906 per arm,
   25%→40% needs 152, 50%→60% needs 388.
-- The clustered/paired power model **collapses exactly to the textbook two-proportion
-  formula** at one repeat with no pairing, which is what makes those hand checks bind on
-  the general case too — and is what would have caught the effective-n bug immediately.
+- The clustered/paired power model collapses exactly to the textbook two-proportion formula
+  at one repeat with no pairing, which is what makes those hand checks bind on the general
+  case too. It is also what would have caught the effective-n bug immediately.
 
 `mypy --strict` and `ruff` are clean. The figures above were measured on Python 3.10.12,
-Linux — run the commands yourself and you should get the same ones, since every seed is
-fixed. CI is configured for Python 3.10–3.13 on Linux plus macOS and Windows,
-**with no secrets configured at all**, and fails the build if scipy ever appears.
+Linux. Run the commands yourself and you should get the same ones, since every seed is
+fixed. CI is configured for Python 3.10-3.13 on Linux plus macOS and Windows, with no
+secrets configured at all, and fails the build if scipy ever appears.
 
 ## Contributing
 
