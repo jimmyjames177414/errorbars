@@ -1,42 +1,32 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/banner.jpg" alt="jimmyjames177414" width="100%">
+<img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/banner.jpg" alt="errorbars" width="100%">
 
 # errorbars
 
 **Your eval says prompt B beat prompt A by 4 points. This tells you whether that's real.**
 
 [![CI](https://github.com/jimmyjames177414/errorbars/actions/workflows/ci.yml/badge.svg)](https://github.com/jimmyjames177414/errorbars/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/errorbars.svg)](https://pypi.org/project/errorbars/)
-[![Python](https://img.shields.io/pypi/pyversions/errorbars.svg)](https://pypi.org/project/errorbars/)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/jimmyjames177414/errorbars/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](https://github.com/jimmyjames177414/errorbars/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-blue.svg)](#install)
 
 </div>
 
-A small statistics layer for LLM experiments: paired control-vs-treatment effects,
-bootstrap confidence intervals, multiplicity correction, and — the part nothing else does —
-**power analysis that tells you what your run can detect before you spend a cent.**
-
 ---
 
-## Why it exists
+**This project caught itself doing bad statistics.** Partway through building it, `errorbars
+power` was pointed at its own planned design — 200 items, 5 repeats — and reported an effective
+sample size *smaller than the item count*. That is arithmetically impossible: effective n is
+`items × repeats / design effect`, and the design effect can never exceed the repeat count, so
+for that design the answer is pinned between 200 and 1,000. The power model was wrong.
 
-Eval harnesses print percentages. Almost none print an interval, a paired comparison
-against a control, or a power calculation. So people size eval sets by feel, ship on
-4-point deltas that sit inside the noise, and cannot tell "this change did nothing" apart
-from "our run was too small to notice."
-
-That last distinction is the point of this tool. In every other harness both come out as
-`p > 0.05`, and they mean opposite things.
-
-## Show me it working
-
-No install, no config, no API key, no network:
-
-<img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/demo.png" alt="errorbars power analysis output" width="100%">
+Corrected, that design cannot reliably resolve anything smaller than **9.3 percentage points**.
+Every figure in this README is printed by the command directly above it, and none of them
+needs an API key:
 
 ```console
-$ uvx errorbars power --items 200 --repeats 5 --baseline 0.80
+$ uvx --from git+https://github.com/jimmyjames177414/errorbars errorbars power \
+      --items 200 --repeats 5 --baseline 0.80
 
 Power analysis  (alpha=0.05, power=80%, two-sided, paired)
 
@@ -62,13 +52,26 @@ Power analysis  (alpha=0.05, power=80%, two-sided, paired)
     analyze` on a pilot to measure the real value.
 ```
 
+<img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/demo.png" alt="errorbars power analysis output" width="100%">
+
 Two hundred items and a thousand model calls cannot reliably resolve anything smaller
 than **9 percentage points**, unless both arms run on the same items. That is the number
 almost nobody computes, and it costs nothing to get.
 
-Then, on results — yours or another tool's:
+## Why a 4-point win is usually not a win
+
+Eval harnesses print percentages. Almost none print an interval, a paired comparison
+against a control, or a power calculation. So people size eval sets by feel, ship on
+4-point deltas that sit inside the noise, and cannot tell "this change did nothing" apart
+from "our run was too small to notice."
+
+That last distinction is the point of this tool. In every other harness both come out as
+`p > 0.05`, and they mean opposite things.
+
+Here it is on results — yours, or another tool's:
 
 ```console
+$ git clone -q https://github.com/jimmyjames177414/errorbars && cd errorbars
 $ errorbars run examples/negation-sensitivity.yaml --analyze
 
 results/negation-sensitivity
@@ -104,7 +107,17 @@ strip-articles     -2.3pp             [-4.6, -0.1]    0.050                  0.0
 ```
 
 Look at rows two and three. Both fail to reach significance. In any other tool they would
-print identically. Here one is a finding and the other is an admission.
+print identically. Here one is a finding and the other is an admission, and the rule that
+separates them takes two inputs, not one:
+
+```mermaid
+flowchart TD
+    A["paired effect, its 95% CI,<br/>and this run's MDE"] --> B{"significant after<br/>Holm correction?"}
+    B -->|yes| C["<b>significant</b>"]
+    B -->|no| D{"does the interval exclude an effect<br/>as large as the MDE?"}
+    D -->|yes| E["<b>null</b><br/>it did nothing, and this run<br/>was big enough to have seen it"]
+    D -->|no| F["<b>UNDERPOWERED</b><br/>this run taught you nothing;<br/>size a bigger one first"]
+```
 
 > **That demo output is synthetic.** `examples/negation-sensitivity.yaml` runs against a
 > deterministic simulator in `src/errorbars/providers/mock.py`, not a language model, so
@@ -114,15 +127,25 @@ print identically. Here one is a finding and the other is an admission.
 
 ## Install
 
+Nothing is published to PyPI. Run it straight from the repository:
+
 ```bash
-uvx errorbars power          # zero-install
-pipx run errorbars power
-pip install errorbars
+uvx --from git+https://github.com/jimmyjames177414/errorbars errorbars power --items 200
 ```
+
+Or put it on your `PATH`, which is what the rest of this README assumes when it writes a bare
+`errorbars`:
+
+```bash
+uv tool install git+https://github.com/jimmyjames177414/errorbars
+```
+
+The example specs and fixtures live in the repository rather than the wheel, so clone it to
+run anything that takes a file path.
 
 Runtime dependencies: `numpy` and `PyYAML`. **No scipy** — Holm, the permutation test and
 the Wilson interval are implemented here, about twenty lines each, because scipy's install
-weight would ruin `uvx` startup for a tool whose flagship command makes no network calls at
+weight would ruin cold-start for a tool whose flagship command makes no network calls at
 all.
 
 ## The three commands
@@ -273,8 +296,9 @@ than an admitted gap. Each of these is a `help-wanted` issue:
 
 ## Is the statistics right?
 
-Fair question for a repository whose entire value is that the arithmetic is correct. It is
-checked against things outside this codebase, not against its own past output:
+Fair question for a repository whose entire value is that the arithmetic is correct — and,
+given the bug at the top of this file, a question it has already failed once. It is checked
+against things outside this codebase, not against its own past output:
 
 ```console
 $ uv run pytest -q -m "not live"
@@ -298,7 +322,7 @@ binary-null false positive rate: 0.048 over 1000 simulations
   25%→40% needs 152, 50%→60% needs 388.
 - The clustered/paired power model **collapses exactly to the textbook two-proportion
   formula** at one repeat with no pairing, which is what makes those hand checks bind on
-  the general case too.
+  the general case too — and is what would have caught the effective-n bug immediately.
 
 `mypy --strict` and `ruff` are clean. The figures above were measured on Python 3.10.12,
 Linux — run the commands yourself and you should get the same ones, since every seed is
@@ -311,7 +335,15 @@ Good first issues: add a scorer, add an output format, improve the terminal tabl
 worked example to `docs/statistics.md`.
 
 You need no API key to contribute anything. The whole suite runs offline against a
-deterministic simulator. See [CONTRIBUTING.md](CONTRIBUTING.md).
+deterministic simulator. See [CONTRIBUTING.md](CONTRIBUTING.md), and
+[NOVELTY.md](NOVELTY.md) for the full prior-art audit and the claims this project may
+never make.
+
+```bash
+git clone https://github.com/jimmyjames177414/errorbars && cd errorbars
+uv venv && uv pip install -e ".[dev]"
+uv run pytest -q -m "not live"
+```
 
 ## Licence
 
