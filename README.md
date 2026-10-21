@@ -306,7 +306,7 @@ arithmetic is checked against things outside this codebase, not against its own 
 
 ```console
 $ uv run pytest -q -m "not live"
-247 passed, 1 deselected
+274 passed, 1 deselected
 
 $ uv run pytest tests/test_bootstrap.py -q -s -m slow
 single-arm mean coverage: 94.9% over 1000 simulations

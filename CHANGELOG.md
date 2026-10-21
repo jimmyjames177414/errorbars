@@ -37,7 +37,7 @@ All notable changes to this project are documented here. The format follows
 - `errorbars power` no longer promises that its headline number errs on the safe side. The
   `--pair-corr` default of 0 is conservative, but the `--icc` default is not: if the real
   ICC is higher and pairing is weak, the real MDE is larger. The CLI text, the `--pair-corr`
-  help and the `stats.power` docstring now say so. The 0.1.0 entry below is left as it was
+  help, the `stats.power` docstring and `docs/statistics.md` now say so. The 0.1.0 entry below is left as it was
   released.
 - The `stats.effects` docstring overstated the `strip-articles` effect built into the demo
   fixture. It is about -3 percentage points (-3.16 by formula).
