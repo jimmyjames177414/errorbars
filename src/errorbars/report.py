@@ -228,9 +228,12 @@ def render_power(
             "    Higher pairing correlation means a tighter MDE. The default of 0.00 assumes"
         )
         lines.append(
-            "    pairing buys nothing, so the headline number is never optimistic. Run `errorbars"
+            "    pairing buys nothing, which is conservative, but if the real ICC is above the"
         )
-        lines.append("    analyze` on a pilot to measure the real value.")
+        lines.append(
+            "    assumed one and pairing is weak, the real MDE is larger. Run `errorbars analyze`"
+        )
+        lines.append("    on a pilot to measure both.")
 
     return "\n".join(lines)
 

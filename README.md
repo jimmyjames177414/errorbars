@@ -16,9 +16,10 @@
 
 **This project caught itself doing bad statistics.** Partway through building it, `errorbars
 power` was pointed at its own planned design (200 items, 5 repeats) and reported an effective
-sample size *smaller than the item count*. That is arithmetically impossible: effective n is
-`items × repeats / design effect`, and the design effect can never exceed the repeat count, so
-for that design the answer is pinned between 200 and 1,000. The power model was wrong.
+sample size *smaller than the item count*. That is arithmetically impossible: effective n can
+never fall below the item count. With no pairing benefit it is
+`items × repeats / design effect`, and the design effect runs from 1 up to the repeat count,
+so for that design the answer is pinned between 200 and 1,000. The power model was wrong.
 
 Corrected, that design cannot reliably resolve anything smaller than **9.3 percentage points**.
 Every figure in this README is printed by the command directly above it, and none of them
@@ -48,8 +49,9 @@ Power analysis  (alpha=0.05, power=80%, two-sided, paired)
     pairing r = 0.6   MDE   6.5 pp
     pairing r = 0.9   MDE   4.5 pp
     Higher pairing correlation means a tighter MDE. The default of 0.00 assumes
-    pairing buys nothing, so the headline number is never optimistic. Run `errorbars
-    analyze` on a pilot to measure the real value.
+    pairing buys nothing, which is conservative, but if the real ICC is above the
+    assumed one and pairing is weak, the real MDE is larger. Run `errorbars analyze`
+    on a pilot to measure both.
 ```
 
 <img src="https://raw.githubusercontent.com/jimmyjames177414/errorbars/main/docs/demo.png" alt="errorbars power analysis output" width="100%">
@@ -127,7 +129,9 @@ flowchart TD
 
 ## Install
 
-Nothing is published to PyPI. Run it straight from the repository:
+Nothing is published to PyPI. The package named `errorbars` on PyPI is a different project,
+so `pip install errorbars` or `uvx errorbars` installs that one, not this. Run this one
+straight from the repository:
 
 ```bash
 uvx --from git+https://github.com/jimmyjames177414/errorbars errorbars power --items 200

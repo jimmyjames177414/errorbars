@@ -58,9 +58,10 @@ What this model does NOT do
   in for a full random-effects structure.
 * It assumes a balanced design: every item gets the same number of repeats in both arms.
 
-Defaults are deliberately conservative: ``pair_corr = 0.0`` assumes pairing buys
-*nothing*, so the reported MDE is never optimistic. Measure both parameters from a real
-run with ``errorbars analyze`` and feed them back in.
+The ``pair_corr = 0.0`` default is deliberately conservative: it assumes pairing buys
+*nothing*. The ``icc`` default is not a bound in either direction: if the real ICC is
+higher and pairing is weak, the real MDE is larger than the reported one. Measure both
+parameters from a real run with ``errorbars analyze`` and feed them back in.
 """
 
 from __future__ import annotations

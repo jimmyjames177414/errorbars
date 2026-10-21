@@ -32,6 +32,21 @@ All notable changes to this project are documented here. The format follows
   `0.1.1` without complaint. The change is purely additive, so existing 0.1 directories
   read exactly as before.
 
+### Fixed
+
+- `errorbars power` no longer promises that its headline number errs on the safe side. The
+  `--pair-corr` default of 0 is conservative, but the `--icc` default is not: if the real
+  ICC is higher and pairing is weak, the real MDE is larger. The CLI text, the `--pair-corr`
+  help and the `stats.power` docstring now say so. The 0.1.0 entry below is left as it was
+  released.
+- The `stats.effects` docstring overstated the `strip-articles` effect built into the demo
+  fixture. It is about -3 percentage points (-3.16 by formula).
+- README: effective n can exceed `items × repeats` once pairing helps, so the 200 to 1,000
+  bound now says it holds only with no pairing benefit.
+- README, `pyproject.toml` and the `cli` docstring no longer imply `uvx errorbars` runs this
+  project. The package named `errorbars` on PyPI is a different project; this one runs from
+  GitHub.
+
 ## [0.1.0] - 2026-09-02
 
 First release. A small statistics layer for LLM experiments.
