@@ -144,6 +144,19 @@ def test_bad_power_arguments_exit_non_zero_without_a_traceback(
     assert "error:" in capsys.readouterr().err
 
 
+def test_zero_variance_power_design_is_a_one_line_error(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """``--icc 1 --pair-corr 1`` used to end in a ZeroDivisionError traceback."""
+    assert main(["power", "--icc", "1", "--pair-corr", "1"]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    lines = captured.err.splitlines()
+    assert len(lines) == 1
+    assert lines[0].startswith("error: ")
+    assert "zero-variance design" in lines[0]
+
+
 # --------------------------------------------------------------------------------------
 # analyze
 # --------------------------------------------------------------------------------------

@@ -32,8 +32,19 @@ All notable changes to this project are documented here. The format follows
   `0.1.1` without complaint. The change is purely additive, so existing 0.1 directories
   read exactly as before.
 
+### Removed
+
+- The publish job in `.github/workflows/release.yml` (TestPyPI or PyPI via Trusted
+  Publishing). The name `errorbars` on PyPI belongs to a different project, so a PyPI
+  release would fail and a TestPyPI one would rehearse a release that cannot happen. The
+  workflow now only verifies, builds and keeps `dist/` as a workflow artifact.
+
 ### Fixed
 
+- `errorbars power --icc 1 --pair-corr 1` crashed with a `ZeroDivisionError` traceback.
+  That pair makes the design factor 0, a zero-variance design with no difference to
+  detect, so `effective_n` and `power_analysis` now raise a `ValueError` that says so and
+  the CLI prints it as a one-line `error:` and exits 2, like any other bad input.
 - `errorbars power` no longer promises that its headline number errs on the safe side. The
   `--pair-corr` default of 0 is conservative, but the ICC defaults are not a bound: with
   more than one repeat and weak pairing, a real ICC above the assumed one can make the real MDE

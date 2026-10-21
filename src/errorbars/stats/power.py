@@ -42,6 +42,10 @@ Working through the algebra for the paired difference of arm means
   :func:`required_items` is tested against hand-computed values of that formula.
 * ``pair_corr = 0`` gives ``k = (1 + (m-1)*icc) / m = design_effect / m``, the classical
   cluster design effect for ``m`` correlated observations per cluster.
+* ``icc = 1, pair_corr = 1`` gives ``k = 0``: every item scores the same on every repeat
+  and the same in both arms, so the model leaves the arms no way to differ.
+  :func:`effective_n` and :func:`power_analysis` reject that design rather than divide
+  by zero.
 
 Required N then follows the standard structure (null-hypothesis variance pooled,
 alternative-hypothesis variance unpooled -- the Fleiss form without the continuity
@@ -135,10 +139,21 @@ def effective_n(n_items: int, repeats: int, icc: float, pair_corr: float = 0.0) 
     arm. With ``icc > 0`` and ``pair_corr`` above ``1 - 1/repeats`` it can exceed
     ``n_items * repeats``, because pairing removes between-item variance that an unpaired
     run would have to pay for.
+
+    Raises:
+        ValueError: on out-of-range inputs, or for the zero-variance design
+            (``icc = 1`` with ``pair_corr = 1``), whose design factor is 0.
     """
     if n_items < 1:
         raise ValueError(f"n_items must be >= 1, got {n_items!r}")
-    return n_items / design_factor(repeats, icc, pair_corr)
+    k = design_factor(repeats, icc, pair_corr)
+    if k == 0.0:
+        raise ValueError(
+            f"icc={icc!r} with pair_corr={pair_corr!r} is a zero-variance design: every item "
+            "scores the same on every repeat and in both arms, so there is no difference to "
+            "detect and no sample size to compute; use a value below 1 for at least one of them"
+        )
+    return n_items / k
 
 
 def required_items(
@@ -361,6 +376,8 @@ def power_analysis(
     target_effect: float | None = None,
 ) -> PowerResult:
     """Full power picture for one design. Pure arithmetic, no I/O, no network."""
+    # First, so the zero-variance design is rejected before any search runs.
+    n_effective = effective_n(n_items, repeats, icc, pair_corr)
     mde = minimum_detectable_effect(
         baseline,
         n_items,
@@ -407,7 +424,7 @@ def power_analysis(
         power=power,
         design_effect=design_effect(repeats, icc),
         design_factor=design_factor(repeats, icc, pair_corr),
-        effective_n=effective_n(n_items, repeats, icc, pair_corr),
+        effective_n=n_effective,
         mde=mde,
         target_effect=target_effect,
         items_for_target=items_for_target,
