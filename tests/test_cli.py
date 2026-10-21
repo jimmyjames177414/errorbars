@@ -259,6 +259,8 @@ def test_analyze_prints_n_a_for_the_zero_variance_design_mde(
     assert "zero-variance design" in out
     report = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
     assert report["effects"][0]["mde_design"] is None
+    assert report["effects"][0]["verdict"] == "underpowered"
+    assert report["effects"][0]["sesoi"] == 0.0
 
 
 def test_analyze_on_a_missing_directory_exits_one_with_a_message(

@@ -51,9 +51,12 @@ All notable changes to this project are documented here. The format follows
   `minimum_detectable_effect` returned its search floor. `required_items` now raises the
   same zero-variance `ValueError`, `minimum_detectable_effect` returns `nan`, and `analyze`
   prints the design MDE as `n/a` (`null` in `report.json`) with a note saying only the
-  observed-precision MDE is reported. A measured pairing correlation within 1e-12 of 1 is
-  now taken as exactly 1, because `np.corrcoef` of two identical arms can come out a
-  couple of ulps short and would otherwise miss the design.
+  observed-precision MDE is reported. A pairing correlation (measured or overridden)
+  within 1e-12 of 1 is now taken as exactly 1, because `np.corrcoef` of two identical arms
+  can come out one or two ulps short and would otherwise miss the design. Because the
+  design MDE no longer stands in as a 1e-6 margin, the default margin for this design is
+  the observed-precision MDE alone; with float scores whose arms are exactly linearly
+  related, that can turn an underpowered verdict into null.
 - `errorbars power` no longer promises that its headline number errs on the safe side. The
   `--pair-corr` default of 0 is conservative, but the ICC defaults are not a bound: with
   more than one repeat and weak pairing, a real ICC above the assumed one can make the real MDE

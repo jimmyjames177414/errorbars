@@ -134,9 +134,10 @@ Verdict = Literal["significant", "null", "underpowered"]
 # does not overstate what repeats bought.
 _ICC_FALLBACK = 1.0
 
-# np.corrcoef of two identical arms can come out a couple of ulps below 1 (measured at
-# 2.2e-16). A measured pairing correlation this close to 1 is taken as exactly 1, so the
-# zero-variance design is recognised whatever the item count.
+# np.corrcoef of two identical arms can come out one or two ulps below 1 (worst seen
+# 2.2e-16 over random identical binary arms of 2 to 100,000 items). A pairing correlation
+# (measured or overridden) this close to 1 is taken as exactly 1, so the zero-variance
+# design is recognised.
 _PAIR_CORR_SNAP = 1e-12
 
 
@@ -446,7 +447,7 @@ def analyse_arms(
             if design_factor(design_repeats, icc, pair_corr) == 0.0:
                 notes.append(
                     f"{treatment.intervention_id}: ICC 1 with pairing r 1 is a zero-variance "
-                    "design (every item scored the same on every repeat and in both arms), "
+                    "design (the model leaves the arms no way to differ), "
                     "so the design MDE is n/a; only the observed-precision MDE is reported"
                 )
         else:
