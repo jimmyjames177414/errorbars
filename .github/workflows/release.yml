@@ -1,19 +1,15 @@
 name: Release
 
-# Manual only. Publishing is a decision, not a side effect of merging.
+# Manual only. Builds and verifies the distribution and keeps it as a workflow artifact.
 #
-# Uses PyPI Trusted Publishing (OIDC), so there is no API token stored in this repository
-# and nothing to leak. Configure the publisher at
-# https://pypi.org/manage/project/errorbars/settings/publishing/ before the first run.
+# It does not publish anywhere. The name `errorbars` on PyPI belongs to a different,
+# unrelated project, so an upload under that name would be rejected, and putting it on
+# TestPyPI would only rehearse a release that cannot happen. The publish job (TestPyPI or
+# PyPI via Trusted Publishing) was removed on 2026-10-21 for that reason. This project runs
+# from GitHub: `uvx --from git+https://github.com/jimmyjames177414/errorbars errorbars`.
+# Publishing to an index needs a distribution name this project owns first.
 on:
   workflow_dispatch:
-    inputs:
-      target:
-        description: "Where to publish"
-        required: true
-        default: testpypi
-        type: choice
-        options: [testpypi, pypi]
 
 permissions:
   contents: read
@@ -30,8 +26,8 @@ jobs:
       - name: Install
         run: uv pip install --system -e ".[dev]"
 
-      # Publishing something that does not pass its own tests would be worse than not
-      # publishing at all, so the gate is here rather than assumed from CI.
+      # Shipping something that does not pass its own tests would be worse than not
+      # shipping at all, so the gate is here rather than assumed from CI.
       - name: Verify before building
         run: |
           ruff check .
@@ -46,25 +42,3 @@ jobs:
         with:
           name: dist
           path: dist/
-
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: release
-    permissions:
-      id-token: write # required for Trusted Publishing
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
-      - name: Publish to TestPyPI
-        if: inputs.target == 'testpypi'
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-
-      - name: Publish to PyPI
-        if: inputs.target == 'pypi'
-        uses: pypa/gh-action-pypi-publish@release/v1

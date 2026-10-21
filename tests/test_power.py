@@ -207,3 +207,12 @@ def test_rejects_out_of_range_correlations() -> None:
         required_items(0.8, 0.05, icc=1.5)
     with pytest.raises(ValueError, match="pair_corr"):
         required_items(0.8, 0.05, pair_corr=-0.2)
+
+
+def test_rejects_the_zero_variance_design() -> None:
+    """icc=1 with pair_corr=1 makes the design factor 0; that is an error, not a division."""
+    assert design_factor(5, 1.0, 1.0) == 0.0
+    with pytest.raises(ValueError, match="zero-variance design"):
+        effective_n(200, 5, icc=1.0, pair_corr=1.0)
+    with pytest.raises(ValueError, match="zero-variance design"):
+        power_analysis(0.80, 200, repeats=1, icc=1.0, pair_corr=1.0)
