@@ -44,8 +44,10 @@ Working through the algebra for the paired difference of arm means
   cluster design effect for ``m`` correlated observations per cluster.
 * ``icc = 1, pair_corr = 1`` gives ``k = 0``: every item scores the same on every repeat
   and the same in both arms, so the model leaves the arms no way to differ.
-  :func:`effective_n` and :func:`power_analysis` reject that design rather than divide
-  by zero.
+  :func:`effective_n`, :func:`required_items` and :func:`power_analysis` reject that
+  design rather than divide by zero or report 0 items, and
+  :func:`minimum_detectable_effect` returns ``nan`` for it, because there is no MDE to
+  report (``errorbars analyze`` prints it as n/a).
 
 Required N then follows the standard structure (null-hypothesis variance pooled,
 alternative-hypothesis variance unpooled -- the Fleiss form without the continuity
@@ -104,6 +106,14 @@ def _check_unit(value: float, name: str) -> None:
         raise ValueError(f"{name} must be in [0, 1], got {value!r}")
 
 
+def _zero_variance_error(icc: float, pair_corr: float) -> ValueError:
+    return ValueError(
+        f"icc={icc!r} with pair_corr={pair_corr!r} is a zero-variance design: every item "
+        "scores the same on every repeat and in both arms, so there is no difference to "
+        "detect and no sample size to compute; use a value below 1 for at least one of them"
+    )
+
+
 def design_effect(repeats: int, icc: float) -> float:
     """Classical cluster design effect for ``repeats`` correlated observations per item.
 
@@ -148,11 +158,7 @@ def effective_n(n_items: int, repeats: int, icc: float, pair_corr: float = 0.0) 
         raise ValueError(f"n_items must be >= 1, got {n_items!r}")
     k = design_factor(repeats, icc, pair_corr)
     if k == 0.0:
-        raise ValueError(
-            f"icc={icc!r} with pair_corr={pair_corr!r} is a zero-variance design: every item "
-            "scores the same on every repeat and in both arms, so there is no difference to "
-            "detect and no sample size to compute; use a value below 1 for at least one of them"
-        )
+        raise _zero_variance_error(icc, pair_corr)
     return n_items / k
 
 
@@ -189,7 +195,9 @@ def required_items(
         "paired" means), so this is the size of the item set, not double it.
 
     Raises:
-        ValueError: on out-of-range inputs, or if ``baseline + effect`` leaves (0, 1).
+        ValueError: on out-of-range inputs, if ``baseline + effect`` leaves (0, 1), or
+            for the zero-variance design (``icc = 1`` with ``pair_corr = 1``), where 0
+            items would be a meaningless answer.
     """
     _check_proportion(baseline, "baseline")
     magnitude = abs(effect)
@@ -219,6 +227,8 @@ def required_items(
 
     numerator = (z_alpha * math.sqrt(var_null) + z_beta * math.sqrt(var_alt)) ** 2
     k = design_factor(repeats, icc, pair_corr)
+    if k == 0.0:
+        raise _zero_variance_error(icc, pair_corr)
 
     return math.ceil(k * numerator / (magnitude * magnitude))
 
@@ -319,13 +329,17 @@ def minimum_detectable_effect(
     Returns:
         The MDE as a proportion (0.028 == 2.8 percentage points), or ``nan`` if no
         effect is detectable at this N -- which means the design is hopeless, not that
-        the answer is small.
+        the answer is small. Also ``nan`` for the zero-variance design (``icc = 1`` with
+        ``pair_corr = 1``), where the model leaves the arms no way to differ and the
+        search would otherwise return its 1e-6 floor as if that were an answer.
     """
     _check_proportion(baseline, "baseline")
     if n_items < 1:
         raise ValueError(f"n_items must be >= 1, got {n_items!r}")
     if direction not in ("up", "down", "either"):
         raise ValueError(f"direction must be 'up', 'down' or 'either', got {direction!r}")
+    if design_factor(repeats, icc, pair_corr) == 0.0:
+        return math.nan
 
     kwargs = {
         "alpha": alpha,

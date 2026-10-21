@@ -114,7 +114,7 @@ from .icc import intraclass_correlation, pair_correlation
 from .multiplicity import holm_adjust
 from .normal import z_critical, z_quantile
 from .permutation import DEFAULT_PERMUTATIONS, paired_permutation_test
-from .power import minimum_detectable_effect
+from .power import design_factor, minimum_detectable_effect
 from .proportions import Interval, wilson_interval
 
 __all__ = [
@@ -133,6 +133,12 @@ Verdict = Literal["significant", "null", "underpowered"]
 # within-item information, treating all variance as between-item is the assumption that
 # does not overstate what repeats bought.
 _ICC_FALLBACK = 1.0
+
+# np.corrcoef of two identical arms can come out one or two ulps below 1 (worst seen
+# 2.2e-16 over random identical binary arms of 2 to 100,000 items). A pairing correlation
+# (measured or overridden) this close to 1 is taken as exactly 1, so the zero-variance
+# design is recognised.
+_PAIR_CORR_SNAP = 1e-12
 
 
 @dataclass(frozen=True)
@@ -409,6 +415,8 @@ def analyse_arms(
                 "how much pairing helped"
             )
         pair_corr = min(1.0, max(0.0, pair_corr))
+        if pair_corr > 1.0 - _PAIR_CORR_SNAP:
+            pair_corr = 1.0
 
         ci = paired_bootstrap_ci(
             control_means,
@@ -436,6 +444,12 @@ def analyse_arms(
                 icc=icc,
                 pair_corr=pair_corr,
             )
+            if design_factor(design_repeats, icc, pair_corr) == 0.0:
+                notes.append(
+                    f"{treatment.intervention_id}: ICC 1 with pairing r 1 is a zero-variance "
+                    "design (the model leaves the arms no way to differ), "
+                    "so the design MDE is n/a; only the observed-precision MDE is reported"
+                )
         else:
             notes.append(
                 f"{treatment.intervention_id}: the control arm scored exactly "

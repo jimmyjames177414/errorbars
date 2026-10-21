@@ -216,3 +216,15 @@ def test_rejects_the_zero_variance_design() -> None:
         effective_n(200, 5, icc=1.0, pair_corr=1.0)
     with pytest.raises(ValueError, match="zero-variance design"):
         power_analysis(0.80, 200, repeats=1, icc=1.0, pair_corr=1.0)
+
+
+def test_required_items_refuses_the_zero_variance_design() -> None:
+    """It used to answer 0 items, which reads as "free" rather than "undefined"."""
+    with pytest.raises(ValueError, match="zero-variance design"):
+        required_items(0.8, 0.05, icc=1.0, pair_corr=1.0)
+
+
+def test_mde_of_the_zero_variance_design_is_nan_not_the_search_floor() -> None:
+    """It used to return 1e-6, the bisection floor, as if that were a real MDE."""
+    assert math.isnan(minimum_detectable_effect(0.8, 200, icc=1.0, pair_corr=1.0))
+    assert math.isnan(minimum_detectable_effect(0.8, 200, icc=1.0, pair_corr=1.0, direction="up"))
