@@ -32,7 +32,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 
-# Runtime dependencies are deliberately minimal so `uvx errorbars` starts fast.
+# Runtime dependencies are deliberately minimal so `uvx --from git+...` starts fast.
 # scipy is FORBIDDEN here: Holm, permutation and Wilson are implemented in this
 # package (see src/errorbars/stats/) and normal quantiles come from the stdlib
 # `statistics.NormalDist`.

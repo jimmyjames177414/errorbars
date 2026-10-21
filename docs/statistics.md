@@ -142,8 +142,9 @@ nothing.
 
 `pair-corr` is how strongly item difficulty carries across the two arms: hard questions
 staying hard. It is usually high, because difficulty is mostly a property of the question.
-The default is `0.0`, which assumes pairing buys nothing, so the headline number is never
-optimistic. Measure yours with `errorbars analyze` and put the real value in.
+The default is `0.0`, which assumes pairing buys nothing. That part is conservative, but the
+ICC default can still flatter the MDE when the real ICC is higher and pairing is weak, so
+measure both with `errorbars analyze` and put the real values in.
 
 ## 6. So how many items do you actually need?
 

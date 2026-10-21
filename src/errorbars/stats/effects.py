@@ -49,7 +49,7 @@ positive claim, "underpowered" is only an admission, so the asymmetry belongs th
 
 Taking the larger of the two, or the design figure alone, produces demonstrably false
 nulls. There is one in this repository's own demo: ``strip-articles`` has a real effect
-of roughly -3.8 percentage points built into the fixture, and a design-model margin
+of about -3 percentage points built into the fixture, and a design-model margin
 labels it "null" while the smaller margin correctly calls it underpowered.
 
 Read this before trusting a default null verdict

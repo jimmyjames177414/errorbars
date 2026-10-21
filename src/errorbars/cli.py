@@ -3,7 +3,7 @@
 ``errorbars power`` is the flagship and is deliberately the cheapest thing in the
 package to run: pure arithmetic, no network, no key, no config file, no results
 directory. If a user only ever runs one errorbars command, it should be that one, and it
-should work three seconds after `uvx errorbars power`.
+should work three seconds after `uvx --from git+... errorbars power`.
 """
 
 from __future__ import annotations
@@ -88,7 +88,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=0.0,
         help=(
             "correlation of item difficulty across arms, 0-1 (default: 0.0, which "
-            "assumes pairing buys nothing, so the answer is never optimistic)"
+            "assumes pairing buys nothing; conservative, though with more than one "
+            "repeat a real ICC above --icc and weak pairing can make the real MDE larger)"
         ),
     )
     power.add_argument(
