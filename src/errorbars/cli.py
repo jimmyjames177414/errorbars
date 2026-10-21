@@ -88,8 +88,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=0.0,
         help=(
             "correlation of item difficulty across arms, 0-1 (default: 0.0, which "
-            "assumes pairing buys nothing; conservative, but if the real ICC is above "
-            "--icc and pairing is weak, the real MDE is larger)"
+            "assumes pairing buys nothing; conservative, though with more than one "
+            "repeat a real ICC above --icc and weak pairing can make the real MDE larger)"
         ),
     )
     power.add_argument(

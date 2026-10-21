@@ -228,12 +228,12 @@ def render_power(
             "    Higher pairing correlation means a tighter MDE. The default of 0.00 assumes"
         )
         lines.append(
-            "    pairing buys nothing, which is conservative, but if the real ICC is above the"
+            "    pairing buys nothing, which is conservative. With more than one repeat, a real"
         )
         lines.append(
-            "    assumed one and pairing is weak, the real MDE is larger. Run `errorbars analyze`"
+            "    ICC above the assumed one and weak pairing can make the real MDE larger. Run"
         )
-        lines.append("    on a pilot to measure both.")
+        lines.append("    `errorbars analyze` on a pilot to measure both.")
 
     return "\n".join(lines)
 

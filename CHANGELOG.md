@@ -35,14 +35,15 @@ All notable changes to this project are documented here. The format follows
 ### Fixed
 
 - `errorbars power` no longer promises that its headline number errs on the safe side. The
-  `--pair-corr` default of 0 is conservative, but the `--icc` default is not: if the real
-  ICC is higher and pairing is weak, the real MDE is larger. The CLI text, the `--pair-corr`
-  help, the `stats.power` docstring and `docs/statistics.md` now say so. The 0.1.0 entry below is left as it was
+  `--pair-corr` default of 0 is conservative, but the ICC defaults are not a bound: with
+  more than one repeat and weak pairing, a real ICC above the assumed one makes the real MDE
+  larger. The CLI text, the `--pair-corr` help, the `stats.power` docstrings and
+  `docs/statistics.md` now say so. The 0.1.0 entry below is left as it was
   released.
 - The `stats.effects` docstring overstated the `strip-articles` effect built into the demo
   fixture. It is about -3 percentage points (-3.16 by formula).
-- README: effective n can exceed `items × repeats` once pairing helps, so the 200 to 1,000
-  bound now says it holds only with no pairing benefit.
+- README: effective n can exceed `items × repeats` when pairing is strong (above
+  1 - 1/repeats), so the README now states the 200 to 1,000 range for the no-pairing case.
 - README, `pyproject.toml` and the `cli` docstring no longer imply `uvx errorbars` runs this
   project. The package named `errorbars` on PyPI is a different project; this one runs from
   GitHub.

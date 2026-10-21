@@ -59,9 +59,12 @@ What this model does NOT do
 * It assumes a balanced design: every item gets the same number of repeats in both arms.
 
 The ``pair_corr = 0.0`` default is deliberately conservative: it assumes pairing buys
-*nothing*. The ``icc`` default is not a bound in either direction: if the real ICC is
-higher and pairing is weak, the real MDE is larger than the reported one. Measure both
-parameters from a real run with ``errorbars analyze`` and feed them back in.
+*nothing*. The ICC defaults are not a bound. With more than one repeat and ``pair_corr``
+below ``1 - 1/repeats``, a real ICC above the assumed one makes the real MDE larger than
+the reported one; this module's ``icc = 0.0`` default is then the optimistic extreme, and
+the CLI's ``--icc 0.5`` default is less so. At one repeat with ``pair_corr = 0`` the ICC
+has no effect. Measure both parameters from a real run with ``errorbars analyze`` and
+feed them back in.
 """
 
 from __future__ import annotations
@@ -129,8 +132,9 @@ def effective_n(n_items: int, repeats: int, icc: float, pair_corr: float = 0.0) 
 
     A run of ``n_items`` items at ``repeats`` repeats carries as much information about
     the paired difference as an unpaired run of this many independent observations per
-    arm. With ``pair_corr > 0`` it can exceed ``n_items * repeats``, because pairing
-    removes between-item variance that an unpaired run would have to pay for.
+    arm. With ``icc > 0`` and ``pair_corr`` above ``1 - 1/repeats`` it can exceed
+    ``n_items * repeats``, because pairing removes between-item variance that an unpaired
+    run would have to pay for.
     """
     if n_items < 1:
         raise ValueError(f"n_items must be >= 1, got {n_items!r}")
