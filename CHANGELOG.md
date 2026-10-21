@@ -45,6 +45,15 @@ All notable changes to this project are documented here. The format follows
   That pair makes the design factor 0, a zero-variance design with no difference to
   detect, so `effective_n` and `power_analysis` now raise a `ValueError` that says so and
   the CLI prints it as a one-line `error:` and exits 2, like any other bad input.
+- `errorbars analyze` printed a design MDE of `0.0pp` (`1e-06` in `report.json`) for the
+  same zero-variance design, which it reaches on real data: one repeat per item and an
+  intervention that changes nothing. `required_items` answered 0 items and
+  `minimum_detectable_effect` returned its search floor. `required_items` now raises the
+  same zero-variance `ValueError`, `minimum_detectable_effect` returns `nan`, and `analyze`
+  prints the design MDE as `n/a` (`null` in `report.json`) with a note saying only the
+  observed-precision MDE is reported. A measured pairing correlation within 1e-12 of 1 is
+  now taken as exactly 1, because `np.corrcoef` of two identical arms can come out a
+  couple of ulps short and would otherwise miss the design.
 - `errorbars power` no longer promises that its headline number errs on the safe side. The
   `--pair-corr` default of 0 is conservative, but the ICC defaults are not a bound: with
   more than one repeat and weak pairing, a real ICC above the assumed one can make the real MDE

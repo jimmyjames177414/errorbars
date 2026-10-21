@@ -387,6 +387,28 @@ def test_single_repeat_falls_back_and_says_so() -> None:
     assert result.effects[0].icc == 1.0
 
 
+def test_identical_arms_at_one_repeat_have_no_design_mde_and_say_so() -> None:
+    """One repeat (ICC assumed 1) and an arm that changes nothing (pairing r 1) is the
+    zero-variance design. The design MDE used to come out as the 1e-6 search floor.
+
+    Seven items on purpose: np.corrcoef of these two identical arms is 0.9999999999999999,
+    not 1.0, so this also pins the snap that lets analyze recognise the design.
+    """
+    per_item = [[1.0], [1.0], [1.0], [0.0], [1.0], [1.0], [0.0]]
+    result = analyse_arms(
+        _arm("control", per_item),
+        [_arm("no-change", per_item)],
+        bootstrap_resamples=200,
+        permutations=200,
+        seed=0,
+    )
+    (effect,) = result.effects
+    assert effect.icc == 1.0
+    assert effect.pair_corr == 1.0
+    assert math.isnan(effect.mde_design)
+    assert any("zero-variance design" in note for note in result.notes)
+
+
 def test_unpaired_items_are_dropped_and_counted() -> None:
     control = Arm("control", {"a": [1.0], "b": [1.0], "c": [0.0]})
     treatment = Arm("t", {"a": [0.0], "b": [1.0], "z": [1.0]})

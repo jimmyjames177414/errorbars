@@ -216,6 +216,51 @@ def test_analyze_never_prints_an_effect_without_its_interval(
             pytest.fail(f"an effect was printed without its interval: {line!r}")
 
 
+def test_analyze_prints_n_a_for_the_zero_variance_design_mde(
+    capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
+    """One repeat per item and an intervention that changes nothing: ICC 1, pairing r 1.
+
+    The design MDE used to print as ``0.0pp`` (``1e-06`` in report.json), the floor of
+    the MDE search rather than an answer.
+    """
+    passed = [True, True, True, False, True, True, False]
+    trials, outcomes = [], []
+    for arm in ("control", "no-change"):
+        for index, ok in enumerate(passed):
+            trial_id = f"{arm}-{index}"
+            trials.append(
+                {
+                    "trial_id": trial_id,
+                    "intervention_id": arm,
+                    "item_id": f"item-{index}",
+                    "repeat_index": 0,
+                    "model": {"provider": "mock", "model": "sim"},
+                }
+            )
+            outcomes.append({"trial_id": trial_id, "scorer": "exact", "passed": ok})
+    manifest = {
+        "cxs_version": "0.1.1",
+        "tool": {"name": "handmade", "version": "0"},
+        "scorer": "exact",
+        "repeats": 1,
+        "control_intervention_id": "control",
+    }
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    for name, records in (("trials.jsonl", trials), ("outcomes.jsonl", outcomes)):
+        (tmp_path / name).write_text(
+            "".join(json.dumps(record) + "\n" for record in records), encoding="utf-8"
+        )
+
+    args = ["analyze", str(tmp_path), "--json", "--resamples", "200", "--permutations", "200"]
+    assert main(args) == 0
+    out = capsys.readouterr().out
+    assert "no-change: MDE n/a by design" in out
+    assert "zero-variance design" in out
+    report = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
+    assert report["effects"][0]["mde_design"] is None
+
+
 def test_analyze_on_a_missing_directory_exits_one_with_a_message(
     capsys: pytest.CaptureFixture[str], tmp_path: Path
 ) -> None:
