@@ -59,7 +59,7 @@ What this model does NOT do
 * It assumes a balanced design: every item gets the same number of repeats in both arms.
 
 The ``pair_corr = 0.0`` default is deliberately conservative: it assumes pairing buys
-*nothing*. The ICC defaults are not a bound. With more than one repeat and ``pair_corr``
+*nothing*. The ICC defaults are not a bound. With more than one repeat and the same ``pair_corr``,
 below ``1 - 1/repeats``, a real ICC above the assumed one makes the real MDE larger than
 the reported one; this module's ``icc = 0.0`` default is then the optimistic extreme, and
 the CLI's ``--icc 0.5`` default is less so. At one repeat with ``pair_corr = 0`` the ICC

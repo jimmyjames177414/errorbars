@@ -36,7 +36,7 @@ All notable changes to this project are documented here. The format follows
 
 - `errorbars power` no longer promises that its headline number errs on the safe side. The
   `--pair-corr` default of 0 is conservative, but the ICC defaults are not a bound: with
-  more than one repeat and weak pairing, a real ICC above the assumed one makes the real MDE
+  more than one repeat and weak pairing, a real ICC above the assumed one can make the real MDE
   larger. The CLI text, the `--pair-corr` help, the `stats.power` docstrings and
   `docs/statistics.md` now say so. The 0.1.0 entry below is left as it was
   released.
